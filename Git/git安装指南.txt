@@ -1,0 +1,48 @@
+### 1. 在windows下安装git
+    安装Git-1.9.5-preview20150319.exe（安装路径不要有中文以及空格）
+
+### 2. 安装可视化界面(可选)
+    TortoiseGit-2.5.0.0-64bit.msi
+    鼠标邮件，选择“TortoiseGit”->“Settings”，在“User Info”输入Name和Email
+    
+### 3. 生成公钥
+    a. win+r --> Git Bash 
+    b. $ ssh-keygen.exe
+    c. 一路回车，将生成“c:/Users/XXX/.ssh/id_rsa.pub”
+    d. 把id_rsa.pub重命名为id_rsa.XXX.pub, 例如id_rsa.jiangyikun.pub
+    e. 将id_rsa.XXX.pub发送给梁安忠（飞秋或者邮件都可以）
+
+### 4. 简单学习
+    这是一个用于测试的repo你可以拿他来做做测试
+    a. 克隆仓库
+        git clone git@162.105.181.12:/home/git/project/sample.git
+        或者使用tortoisegit，在某个文件夹，右键-->Git Clone...--> URL填写“git@162.105.181.12:/home/git/project/sample.git”--> 输入密码
+
+    b. 修改文件并提交
+        1. 在cpu目录下建立一个文件比如，姓名.txt
+        2. 右键 Git Commit -> "Master"
+        3. 填写Commit Message，并选择需要提交的文件，双击可以可视化的查看diff
+    
+    c. 点击push， ok
+    
+### 6. 学习git
+http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000
+
+Enjoy it! :)
+
+### 7.在服务器上有,cpu.git himac.git hiphy.git sample.git 4个仓库，
+其中，himac.git和hiphy.git已经将之前的svn迁移过来。
+cpu.git目前还是空的。
+sample.git供大家测试尝试使用。
+请各位先分别clone下来，然后在提交自己的负责的代码
+如果一个项目里有多个子项目，请用目录方式隔离，例如cpu下有bootloader,hinoc270等，就分别在CPU目录下新建多个目录以示区分
+
+需要讨论：
+1、是否由于是多项目协作，上述分别的git仅仅是各自负责的部分，对于SoC应该单独建立一个git仓库进行维护更新？
+2、产品团队是否需要git仓库进行版本管理？至少过去电路调试部分需要积累
+3、检查一下文档是否齐全
+4、目前权限是开放的。
+
+
+注：从已有的svn上将数据库clone下来
+git svn clone -r <revision number>:HEAD <url> --no-metadata
