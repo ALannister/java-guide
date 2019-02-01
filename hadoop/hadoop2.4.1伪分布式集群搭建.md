@@ -157,7 +157,7 @@ tar -zxvf jdk-7u55-linux-i586.tar.gz -C /home/hadoop/app
 - 将java添加到环境变量中
 
 ```
-    vim /etc/profile
+    sudo vi /etc/profile
     #在文件最后添加
     export JAVA_HOME=/home/hadoop/app/jdk1.7.0_65
     export PATH=$PATH:$JAVA_HOME/bin
@@ -171,47 +171,46 @@ tar -zxvf jdk-7u55-linux-i586.tar.gz -C /home/hadoop/app
     source /etc/profile
 ```
 
-- 以上是环境搭建好了，可以备份一台母机，万一玩废了，还可以重新来过 
-  克隆一台服务器，备份！
+- 测试安装是否成功
+
+`java -version`
 
 ### 3. 安装hadoop2.4.1
 
-- 先上传hadoop的安装包到服务器上去，解压到/home/hadoop/app目录下
+#### 3.1 先上传hadoop的安装包到服务器上去，解压到/home/hadoop/app目录下
 
 > 注意：hadoop2.x的配置文件$HADOOP_HOME/etc/hadoop
 
-- 伪分布式需要修改5个配置文件 
-	配置文件中有默认的的配置参数，可以在官网查看详细信息，这里指修改，必须设置的参数，简单化让程序先运行起来 
+#### 3.2 伪分布式需要修改5个配置文件 
 
-> （rm -rf xxx/sss 删除文件或则文件夹） 
+> 配置文件中有默认的的配置参数，可以在官网查看详细信息，这里指修改必须设置的参数，简单化让程序先运行起来 
 
-需要先进入到hadoop安装目录下的 etc/hadoop/ 中
+- 需要先进入到hadoop安装目录下的 etc/hadoop/ 中
 
-#### hadoop-env.sh
+##### 3.2.1 hadoop-env.sh
 
 ```
-vim hadoop-env.sh
-    #第27行，修改成vim /etc/profile 中配置的java——home路径
+vi hadoop-env.sh
+    #第27行，修改成 /etc/profile 中配置的JAVA_HOME路径
     export JAVA_HOME=/home/hadoop/app/jdk1.7.0_65
 ```
 
-##### core-site.xml
+###### 3.2.2  core-site.xml
 
 ```
 <!-- 指定HADOOP所使用的文件系统schema（URI），HDFS的老大（NameNode）的地址 -->
     <property>
         <name>fs.defaultFS</name>
-        <value>hdfs://had01:9000</value>
+        <value>hdfs://hadoop101:9000</value>
     </property>
-    <!-- 指定hadoop运行时产生文件的存储目录:要定义在当前用于的权限目录中 -->
+<!-- 指定hadoop运行时产生文件的存储目录:要定义在当前用于的权限目录中 -->
     <property>
         <name>hadoop.tmp.dir</name>
-        <value>/home/hadoop/hadoop-2.4.1/tmp</value>
+        <value>/home/hadoop/hadoop-2.4.1/data/</value>
     </property>
 ```
 
-#### hdfs-site.xml
-hdfs-default.xml
+##### 3.2.3  hdfs-site.xml
 
 ```
 <!-- 指定HDFS副本的数量:上传文件备份的副本个数 -->
@@ -221,7 +220,7 @@ hdfs-default.xml
     </property>
 ```
 
-#### mapred-site.xml
+##### 3.2.4  mapred-site.xml
 
 没有该文件的话，该目录下提供了一个模版文件，我们把该文件直接修改名称 
 
@@ -237,14 +236,13 @@ mv mapred-site.xml.template mapred-site.xml
     </property>
 ```
 
-
-#### yarn-site.xml
+##### 3.2.5  yarn-site.xml
 
 ```
 <!-- 指定YARN的老大（ResourceManager）的地址 -->
     <property>
         <name>yarn.resourcemanager.hostname</name>
-        <value>had01</value>
+        <value>hadoop101</value>
     </property>
 <!-- reducer获取数据的方式 -->
     <property>
@@ -253,7 +251,7 @@ mv mapred-site.xml.template mapred-site.xml
      </property>
 ```
 
-#### 将hadoop添加到环境变量
+#### 3.3 将hadoop添加到环境变量
 
 ```
 vim /etc/proflie
@@ -264,21 +262,21 @@ vim /etc/proflie
 source /etc/profile #刷新资源
 ```
 
-> 最开始我们增加jdk环境变量的时候一次增加了hadoop环境变量，这一步就可以不增加了**
+> 最开始我们添加jdk环境变量的时候顺便添加了hadoop环境变量，这一步就可以不添加了
 
-### 4. copy配置好的hadoop到dataNode节点 
-
+#### 3.4 copy配置好的hadoop到dataNode节点 
+?
 > 或者把已经配置好的hadoop目录备份一份，如果操作了以下的，再复制到其他节点上就会出现各种错误
 
-#### 复制文件到远程主机： 
-
+#### 3.5 复制文件到远程主机： 
+?
 ```
 scp -r hadoop-2.4.1/ hadoop@had002:/home/hadoop/app/
 ```
 
 然后修改had002的主机名称，ip地址（之前备份的母机在这里就显示出作用了）其他的不用修改，重启等待
 
-#### 扩展datenode
+#### 3.6  扩展datenode
 
 > 以下一大段话是出了问题的总结，可以先不看。跟着笔记走就行了
 
@@ -288,30 +286,42 @@ scp -r hadoop-2.4.1/ hadoop@had002:/home/hadoop/app/
 如果出现了：http://master:50070/中看不到你所配置的datenode其他节点。则就是这里扩展（复制）的时候有问题。 
 重新弄一个os系统。修改主机名称、关闭防火墙、当前组加入sudo配置文件、固定id、hosts列表映射、jdk，hadoop环境变量、再从其他已运行的datenode中把hadoop文件夹复制到统一的目录下即可。
 
-#### 格式化namenode
+#### 3.7  格式化namenode
 
-> 是对namenode进行初始化，也就是在had01上面执行该命令
+是对namenode进行初始化，也就是在hadoop101上面执行该命令
 
 ```
-hdfs namenode -format (hadoop namenode -format)
+hdfs namenode -format 
+or (hadoop namenode -format)
 ```
 
-> 格式化命令，只是在hadoop的tem目录下生成对应的节点目录，如果遇到启动有问题的，可以尝试删除tem目录下的 nameNode 和 dateNode目录，重新格式化
+> 格式化命令，只是在hadoop的data目录下生成对应的节点目录，如果遇到启动有问题的，可以尝试删除data目录下的 nameNode 和 dateNode目录，重新格式化
 
-#### 启动hadoop
+#### 3.8 启动hadoop
 
 - 启动之前最好先把免验证登录设置了 
 
 > 自己在配置的过程中，就出现了手动输入密码，但是还卡着不动，配置了免验证密码登录之后，再启动就正常了 
 
-```
-	配置需要自动启动的data节点 
-（cd etc/hadoop/）：vi slaves 
-	把需要启动dataNode进程机器的主机名或则ip地址加入该文件列表，每行一个。 
-sbin/start-dfs.sh
+- 配置需要自动启动的data节点 
 
-	YARN（资源调度集群框架,服务于mapreduce等运算框架）
+```
+（cd etc/hadoop/）：vi slaves 
+把需要启动dataNode进程机器的主机名或则ip地址加入该文件列表，每行一个
+例如：
+hadoop101
+hadoop102
+```
+
+- 启动HDFS
+
+`sbin/start-dfs.sh`
+
+- 启动YARN
+
+```
 sbin/start-yarn.sh
+YARN（资源调度集群框架,服务于mapreduce等运算框架）
 ```
 
 - 验证是否启动成功
@@ -326,48 +336,69 @@ sbin/start-yarn.sh
 27512 DataNode
 ```
 
-> [HDFS管理界面，启动hdfs](http://192.168.1.101:50070)
+- 管理界面
 
-> [MR管理界面,启动YARN才能打开该页面](http://192.168.1.101:8088 )
+[HDFS管理界面，启动hdfs](http://192.168.1.101:50070)
 
-- 配置ssh免登陆
+[MR管理界面,启动YARN才能打开该页面](http://192.168.1.101:8088 )
+
+### 4 配置ssh免登陆
 
 > 要全部配置了免密码登录，连master（本机）也要配置后，才会正常的被启动（实测是这样不会出现什么异常），本机配置之后，不需要输入密码
 
-1. 生成ssh免登陆密钥
-	
+#### 4.1 生成ssh免登陆密钥
+
+```
 	进入到我的home目录 
 	cd ~/.ssh 
 	ssh-keygen -t rsa 
 	（四个回车）执行完这个命令后，会生成两个文件id_rsa（私钥）、id_rsa.pub（公钥） 
-	
-	2. 将公钥拷贝到要免密登陆的目标机器上
-	
+```
+
+#### 4.2 将公钥拷贝到要免密登陆的目标机器上
+
+```
 	> 比如：要在100，上免密码登录101，那么就在100上面操作，然后复制到101上面
 	> 也就是说：如果要在master上面免密码启动其他date节点：就要在master上面操作，然后复制到其他节点上面 
 	> ssh-copy-id localhost #localhost 是主机名称或则ip地址
-	
-	3. ssh密钥验证原理图 
+```
+
+#### 4.3 ssh密钥验证原理图 
 
 
 
 
-### 使用HDFS shell测试效果
-#### 查看帮助 
-hadoop fs -help //cmd
-#### 上传 
+### 5 使用HDFS shell测试效果
+
+#### 5.1 查看帮助 
+
+`hadoop fs -help //cmd`
+
+#### 5.2 上传 
+
+```
 hadoop fs -put (linux上文件) (hdfs上的路径) 
 hadoop fs -put /home/hadoop/insall/Ghost_XP_IE8_CJ_V2015.02.iso hdfs://had01:9000/Ghost_XP_IE8_CJ_V2015.02.iso
-#### 查看文件内容 
-hadoop fs -cat (hdfs上的路径)
-查看文件列表 
-hadoop fs -ls /
-下载文件 
-hadoop fs -get (hdfs上的路径) (linux上文件)
-删除文件 
-hadoop dfs -rm xxx
+```
 
-删除目录与目录下所有文件 
-hadoop dfs -rmr /user/cl/temp
+#### 5.3 查看文件内容 
+
+`hadoop fs -cat (hdfs上的路径)`
+
+#### 5.4 查看文件列表 
+
+`hadoop fs -ls /`
+
+#### 5.5 下载文件 
+
+`hadoop fs -get (hdfs上的路径) (linux上文件)`
+
+#### 5.6 删除文件 
+
+`hadoop dfs -rm xxx`
+
+#### 5.7 删除目录与目录下所有文件 
+
+`hadoop dfs -rmr /user/cl/temp`
 
 
