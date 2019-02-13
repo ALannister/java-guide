@@ -54,10 +54,11 @@ vi /etc/sudoers
 ## Allow root to run any commands anywhere 
 root ALL=(ALL) ALL 
 hadoop ALL=(ALL) ALL 
+：wq!
 (该项配置大概在第27行)
 ```
 
-#### 1.5 配置IP地址
+#### 1.5 配置IP地址 
 
 两种方式：
 
