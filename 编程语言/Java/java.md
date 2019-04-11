@@ -3,10 +3,10 @@
 ```
 public class Test {
     public static void main(String args[]) {
-        String Str = new String("www.runoob.com");
+        String str = new String("www.runoob.com");
 
         System.out.print("返回值 :" );
-        System.out.println( Str.toCharArray() );
+        System.out.println( str.toCharArray() );
     }
 }
 ```
