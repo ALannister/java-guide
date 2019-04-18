@@ -7,3 +7,10 @@ static <T> T	max(Collection<? extends T> coll, Comparator<? super T> comp)
 static <T> T	min(Collection<? extends T> coll, Comparator<? super T> comp)
 static <T> boolean	replaceAll(List<T> list, T oldVal, T newVal)
 static <T> void	sort(List<T> list, Comparator<? super T> c)
+
+Collections.sort()
+public static <T> void sort(List<T> list, Comparator<? super T> c) {
+        list.sort(c);
+    }
+
+
