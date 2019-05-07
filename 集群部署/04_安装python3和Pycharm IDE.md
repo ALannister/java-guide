@@ -148,3 +148,29 @@ pip 19.1.1 from /opt/module/python3/lib/python3.6/site-packages/pip (python 3.6)
 #### 6.2 项目环境设置，点击“Create”
 
 ![1557229295673](1557229295673.png)
+
+#### 6.4 添加项目文件
+
+```
+[hinoc@hadoop201 opt]$ sudo chown -R hinoc:hadoop PycharmProjects/
+```
+
+- 红框内的文件为添加的项目文件
+
+![1557231819441](1557231819441.png)
+
+#### 6.5 添加modules
+
+##### 6.5.1 点击File -> Settings
+
+![1557231742245](1557231742245.png)
+
+##### 6.5.2 点击Project Interpreter -> +
+
+![1557232166340](1557232166340.png)
+
+##### 6.5.3 输入包名，选择版本，点击Install Package
+
+![1557232133016](1557232133016.png)
+
+- 包列表：kafka, Flask, Flask-SocketIO
