@@ -32,7 +32,7 @@
 
 ## JDK深入
 
-​	JDK是整个Java的核心，包括Java运行环境JRE、一堆Java工具（javac/java/jdb等）和java基础的类库（Java API、tr.jar等）
+​	JDK是整个Java的核心，包括Java运行环境JRE、一堆Java工具（javac/java/jdb等）和java基础的类库（Java API、rt.jar等）
 
 
 
@@ -53,3 +53,6 @@
 来源：简书
 
 简书著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。
+
+ 
+
