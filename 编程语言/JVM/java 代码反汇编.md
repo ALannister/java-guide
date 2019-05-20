@@ -1,212 +1,151 @@
-### ### java 代码
+# java代码编译及反汇编
+
+### java 代码
 
 ```
 package test;
 
 public class Math {
 
-	public static int a0 = 3;
-	public static final long a1 = 5;
-	int a2 = 7;
-
-	public int math() {
-		int a = 10;
-		int b = 11;
-		int c = 12;
-		int d = (a + b + c) * 10;
-		return d;
+	public int math(byte b, short s, char c, int i, long l, float f, Object o, double d) {
+		int m1 = 10;
+		int m2 = 11;
+		int m3 = (m1 + m2) * 10;
+		return m3;
 	}
 
 	public static void main(String[] args) {
 		Math m = new Math();
-		int res = m.math();
+		int res = m.math((byte)1, (short)1, 'a', 1, 1L, 1.0f, new Object(), 1.0 );
 		System.out.println(res);
 	}
 }
 ```
 
+### 编译
+
+```
+C:\Users\HINOC\Desktop\eclipse-workspace\test\src\test> javac Math.java
+```
+
 ### 反汇编
 
 ```
-C:\Users\HINOC\Desktop\GIT\eclipse-workspace\test\bin\test> javap -c Math.class > math.txt
+C:\Users\HINOC\Desktop\eclipse-workspace\test\src\test> javap -v Math.class > math.txt
 ```
 
 ### 字节码文件
 
 ```
-Classfile /C:/Users/HINOC/Desktop/GIT/eclipse-workspace/test/bin/test/Math.class
-  Last modified 2019-5-9; size 899 bytes
-  MD5 checksum 40919d988c35681d7a1296854dfb7249
+Classfile /C:/Users/HINOC/Desktop/eclipse-workspace/test/src/test/Math.class
+  Last modified 2019-5-17; size 543 bytes
+  MD5 checksum e3d2b2fb7599abe246d20e3aac5de55d
   Compiled from "Math.java"
 public class test.Math
   minor version: 0
   major version: 52
   flags: ACC_PUBLIC, ACC_SUPER
 Constant pool:
-   #1 = Class              #2             // test/Math
-   #2 = Utf8               test/Math
-   #3 = Class              #4             // java/lang/Object
-   #4 = Utf8               java/lang/Object
-   #5 = Utf8               a0
-   #6 = Utf8               I
-   #7 = Utf8               a1
-   #8 = Utf8               J
-   #9 = Utf8               ConstantValue
-  #10 = Long               5l
-  #12 = Utf8               a2
-  #13 = Utf8               <clinit>
-  #14 = Utf8               ()V
-  #15 = Utf8               Code
-  #16 = Fieldref           #1.#17         // test/Math.a0:I
-  #17 = NameAndType        #5:#6          // a0:I
-  #18 = Utf8               LineNumberTable
-  #19 = Utf8               LocalVariableTable
-  #20 = Utf8               <init>
-  #21 = Methodref          #3.#22         // java/lang/Object."<init>":()V
-  #22 = NameAndType        #20:#14        // "<init>":()V
-  #23 = Fieldref           #1.#24         // test/Math.a2:I
-  #24 = NameAndType        #12:#6         // a2:I
-  #25 = Utf8               this
-  #26 = Utf8               Ltest/Math;
-  #27 = Utf8               math
-  #28 = Utf8               ()I
-  #29 = Utf8               a
-  #30 = Utf8               b
-  #31 = Utf8               c
-  #32 = Utf8               d
-  #33 = Utf8               main
-  #34 = Utf8               ([Ljava/lang/String;)V
-  #35 = Methodref          #1.#22         // test/Math."<init>":()V
-  #36 = Methodref          #1.#37         // test/Math.math:()I
-  #37 = NameAndType        #27:#28        // math:()I
-  #38 = Fieldref           #39.#41        // java/lang/System.out:Ljava/io/PrintStream;
-  #39 = Class              #40            // java/lang/System
-  #40 = Utf8               java/lang/System
-  #41 = NameAndType        #42:#43        // out:Ljava/io/PrintStream;
-  #42 = Utf8               out
-  #43 = Utf8               Ljava/io/PrintStream;
-  #44 = Methodref          #45.#47        // java/io/PrintStream.println:(I)V
-  #45 = Class              #46            // java/io/PrintStream
-  #46 = Utf8               java/io/PrintStream
-  #47 = NameAndType        #48:#49        // println:(I)V
-  #48 = Utf8               println
-  #49 = Utf8               (I)V
-  #50 = Utf8               args
-  #51 = Utf8               [Ljava/lang/String;
-  #52 = Utf8               m
-  #53 = Utf8               res
-  #54 = Utf8               SourceFile
-  #55 = Utf8               Math.java
+   #1 = Methodref          #4.#18         // java/lang/Object."<init>":()V
+   #2 = Class              #19            // test/Math
+   #3 = Methodref          #2.#18         // test/Math."<init>":()V
+   #4 = Class              #20            // java/lang/Object
+   #5 = Methodref          #2.#21         // test/Math.math:(BSCIJFLjava/lang/Object;D)I
+   #6 = Fieldref           #22.#23        // java/lang/System.out:Ljava/io/PrintStream;
+   #7 = Methodref          #24.#25        // java/io/PrintStream.println:(I)V
+   #8 = Utf8               <init>
+   #9 = Utf8               ()V
+  #10 = Utf8               Code
+  #11 = Utf8               LineNumberTable
+  #12 = Utf8               math
+  #13 = Utf8               (BSCIJFLjava/lang/Object;D)I
+  #14 = Utf8               main
+  #15 = Utf8               ([Ljava/lang/String;)V
+  #16 = Utf8               SourceFile
+  #17 = Utf8               Math.java
+  #18 = NameAndType        #8:#9          // "<init>":()V
+  #19 = Utf8               test/Math
+  #20 = Utf8               java/lang/Object
+  #21 = NameAndType        #12:#13        // math:(BSCIJFLjava/lang/Object;D)I
+  #22 = Class              #26            // java/lang/System
+  #23 = NameAndType        #27:#28        // out:Ljava/io/PrintStream;
+  #24 = Class              #29            // java/io/PrintStream
+  #25 = NameAndType        #30:#31        // println:(I)V
+  #26 = Utf8               java/lang/System
+  #27 = Utf8               out
+  #28 = Utf8               Ljava/io/PrintStream;
+  #29 = Utf8               java/io/PrintStream
+  #30 = Utf8               println
+  #31 = Utf8               (I)V
 {
-  public static int a0;
-    descriptor: I
-    flags: ACC_PUBLIC, ACC_STATIC
-
-  public static final long a1;
-    descriptor: J
-    flags: ACC_PUBLIC, ACC_STATIC, ACC_FINAL
-    ConstantValue: long 5l
-
-  int a2;
-    descriptor: I
-    flags:
-
-  static {};
-    descriptor: ()V
-    flags: ACC_STATIC
-    Code:
-      stack=1, locals=0, args_size=0
-         0: iconst_3
-         1: putstatic     #16                 // Field a0:I
-         4: return
-      LineNumberTable:
-        line 5: 0
-        line 6: 4
-      LocalVariableTable:
-        Start  Length  Slot  Name   Signature
-
   public test.Math();
     descriptor: ()V
     flags: ACC_PUBLIC
     Code:
-      stack=2, locals=1, args_size=1
+      stack=1, locals=1, args_size=1
          0: aload_0
-         1: invokespecial #21                 // Method java/lang/Object."<init>":()V
-         4: aload_0
-         5: bipush        7
-         7: putfield      #23                 // Field a2:I
-        10: return
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
       LineNumberTable:
         line 3: 0
-        line 7: 4
-        line 3: 10
-      LocalVariableTable:
-        Start  Length  Slot  Name   Signature
-            0      11     0  this   Ltest/Math;
 
-  public int math();
-    descriptor: ()I
+  public int math(byte, short, char, int, long, float, java.lang.Object, double);
+    descriptor: (BSCIJFLjava/lang/Object;D)I
     flags: ACC_PUBLIC
     Code:
-      stack=2, locals=5, args_size=1
+      stack=2, locals=14, args_size=9
          0: bipush        10
-         2: istore_1
-         3: bipush        11
-         5: istore_2
-         6: bipush        12
-         8: istore_3
-         9: iload_1
-        10: iload_2
-        11: iadd
-        12: iload_3
-        13: iadd
-        14: bipush        10
-        16: imul
-        17: istore        4
-        19: iload         4
-        21: ireturn
+         2: istore        11
+         4: bipush        11
+         6: istore        12
+         8: iload         11
+        10: iload         12
+        12: iadd
+        13: bipush        10
+        15: imul
+        16: istore        13
+        18: iload         13
+        20: ireturn
       LineNumberTable:
-        line 10: 0
-        line 11: 3
-        line 12: 6
-        line 13: 9
-        line 14: 19
-      LocalVariableTable:
-        Start  Length  Slot  Name   Signature
-            0      22     0  this   Ltest/Math;
-            3      19     1     a   I
-            6      16     2     b   I
-            9      13     3     c   I
-           19       3     4     d   I
+        line 6: 0
+        line 7: 4
+        line 8: 8
+        line 9: 18
 
   public static void main(java.lang.String[]);
     descriptor: ([Ljava/lang/String;)V
     flags: ACC_PUBLIC, ACC_STATIC
     Code:
-      stack=2, locals=3, args_size=1
-         0: new           #1                  // class test/Math
+      stack=11, locals=3, args_size=1
+         0: new           #2                  // class test/Math
          3: dup
-         4: invokespecial #35                 // Method "<init>":()V
+         4: invokespecial #3                  // Method "<init>":()V
          7: astore_1
          8: aload_1
-         9: invokevirtual #36                 // Method math:()I
-        12: istore_2
-        13: getstatic     #38                 // Field java/lang/System.out:Ljava/io/PrintStream;
-        16: iload_2
-        17: invokevirtual #44                 // Method java/io/PrintStream.println:(I)V
-        20: return
+         9: iconst_1
+        10: iconst_1
+        11: bipush        97
+        13: iconst_1
+        14: lconst_1
+        15: fconst_1
+        16: new           #4                  // class java/lang/Object
+        19: dup
+        20: invokespecial #1                  // Method java/lang/Object."<init>":()V
+        23: dconst_1
+        24: invokevirtual #5                  // Method math:(BSCIJFLjava/lang/Object;D)I
+        27: istore_2
+        28: getstatic     #6                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        31: iload_2
+        32: invokevirtual #7                  // Method java/io/PrintStream.println:(I)V
+        35: return
       LineNumberTable:
-        line 18: 0
-        line 19: 8
-        line 20: 13
-        line 21: 20
-      LocalVariableTable:
-        Start  Length  Slot  Name   Signature
-            0      21     0  args   [Ljava/lang/String;
-            8      13     1     m   Ltest/Math;
-           13       8     2   res   I
+        line 13: 0
+        line 14: 8
+        line 15: 28
+        line 16: 35
 }
 SourceFile: "Math.java"
+
 ```
 
 ### 为什么对象被new以后会执行dup操作?

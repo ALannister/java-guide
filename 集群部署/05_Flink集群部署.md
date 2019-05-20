@@ -1,4 +1,4 @@
-## Flink集群部署(standalone模式)
+# Flink集群部署(standalone模式)
 
 ### 目录
 
@@ -14,7 +14,7 @@
 
 - 下载地址 https://flink.apache.org/downloads.html#apache-flink-180
 
-![1557282332622](1557282332622.png)
+![1557282332622](assets/1557282332622.png)
 
 - 将flink-1.7.2-bin-hadoop27-scala_2.12.tgz复制到/opt/software目录下
 
@@ -43,7 +43,7 @@
 jobmanager.rpc.address: hadoop201
 
 # The heap size for the JobManager JVM
-jobmanager.heap.size: 256m
+jobmanager.heap.size: 512m
 
 # The heap size for the TaskManager JVM
 taskmanager.heap.size: 256m
@@ -52,11 +52,11 @@ taskmanager.heap.size: 256m
 taskmanager.tmp.dirs: /opt/module/flink-1.7.2/tmData
 
 # The number of task slots that each TaskManager offers. Each slot runs one parallel pipeline.
-taskmanager.numberOfTaskSlots: 7
+taskmanager.numberOfTaskSlots: 8
 
 # The amount of memory going to the network stack.
-taskmanager.network.memory.min: 16mb
-taskmanager.network.memory.max: 64mb
+taskmanager.network.memory.min: 64mb
+taskmanager.network.memory.max: 512mb
 ```
 
 ##### 2.3.3 配置 masters, slaves，配置结果如下
@@ -78,4 +78,4 @@ hadoop201
 [hinoc@hadoop201 flink-1.7.2]$ ./bin/start-cluster.sh 
 ```
 
-![1557289610735](1557289610735.png)
+![1557289610735](assets/1557289610735.png)
