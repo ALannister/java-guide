@@ -1,0 +1,28 @@
+杀死所有java进程
+1.Linux查看所有Java进程
+
+ps -ef | grep java | grep -v grep 
+
+(是在列出的进程中去除含有关键字"grep"的进程)
+
+2. 使用awk分割结果，获取PID
+
+awk '{print $2}'
+
+ps -ef | grep java | grep -v grep | awk '{print $2}'
+
+3. 杀死进程 kill -9 PID
+
+xargs 作用是将参数列表转换成小块分段传递给其他命令，以避免参数列表过长的问题
+
+ps -ef | grep java | grep -v grep | awk '{print $2}' | xargs kill -9
+
+具体xargs的用法请查看https://blog.csdn.net/u011517841/article/details/53196380
+
+4.是用jar包运行的进程，需要kill掉的话
+
+jps -l | grep 'test.jar' | grep -v grep | awk '{print $1}' | xargs kill -9
+
+5.有时发现jar运行的进程杀不死，很可能是僵尸进程，需要把父进程杀掉
+
+cat /proc/$(jps | grep 'jar' | awk '{print $1}' |awk 'NR==1{print}')/status | grep 'PPid' | awk '{print $2}' | xargs kill -9
