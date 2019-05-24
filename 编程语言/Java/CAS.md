@@ -1,7 +1,8 @@
-## CAS 你知道吗？
+# CAS
+
+>[参考]：http://blog.cuzz.site/2019/04/16/Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/
 
 ```
-
 public class CASDemo {
     public static void main(String[] args) {
         AtomicInteger atomicInteger = new AtomicInteger(666);
@@ -20,7 +21,6 @@ public class CASDemo {
 #### getAndIncrement();
 
 ```
-
 /**
  * Atomically increments by one the current value.
  *
@@ -36,7 +36,6 @@ public final int getAndIncrement() {
 #### UnSafe 类
 
 ```
-
 public class AtomicInteger extends Number implements java.io.Serializable {
     private static final long serialVersionUID = 6214790243416807050L;
 
@@ -67,24 +66,31 @@ public class AtomicInteger extends Number implements java.io.Serializable {
 
 - 它的功能是判断内存某一个位置的值是否为预期，如果是则更改这个值，这个过程就是原子的。
 
-- CAS 并发原体现在 JAVA 语言中就是 sun.misc.Unsafe 类中的各个方法。调用 UnSafe 类中的 CAS  方法，JVM 会帮我们实现出 CAS 汇编指令。这是一种完全依赖硬件的功能，通过它实现了原子操作。由于 CAS  是一种系统源语，源语属于操作系统用语范畴，是由若干条指令组成，用于完成某一个功能的过程，并且原语的执行必须是连续的，在执行的过程中不允许被中断，也就是说  CAS 是一条原子指令，不会造成所谓的数据不一致的问题。 
+- CAS 并发原语体现在 JAVA 语言中就是 sun.misc.Unsafe 类中的各个方法。调用 UnSafe 类中的 CAS  方法，JVM 会帮我们实现出 CAS 汇编指令。这是一种完全依赖硬件的功能，通过它实现了原子操作。由于 CAS  是一种系统原语，原语属于操作系统用语范畴，是由若干条指令组成，用于完成某一个功能的过程，并且原语的执行必须是连续的，在执行的过程中不允许被中断，也就是说  CAS 是一条原子指令，不会造成所谓的数据不一致的问题。 
 
 - 分析一下 getAndAddInt 这个方法
 
-  ```
-  
-  ```
-
-- ```
-  // unsafe.getAndAddInt
-  public final int getAndAddInt(Object obj, long valueOffset, long expected, int val) {
-      int temp;
-      do {
-          temp = this.getIntVolatile(obj, valueOffset);  // 获取快照值
-      } while (!this.compareAndSwap(obj, valueOffset, temp, temp + val));  // 如果此时 temp 没有被修改，就能退出循环，否则重新获取
-      return temp;
-  }
-  ```
+```
+// unsafe.getAndAddInt
+/**
+   * Atomically adds the given value to the current value of a field
+   * or array element within the given object <code>o</code>
+   * at the given <code>offset</code>.
+   *
+   * @param o object/array to update the field/element in
+   * @param offset field/element offset
+   * @param delta the value to add
+   * @return the previous value
+   * @since 1.8
+   */ 
+   public final int getAndAddInt(Object o, long offset, int delta) {
+	   	int v; 
+   		do { 
+   			v = getIntVolatile(o, offset); 
+   		} while (!compareAndSwapInt(o, offset, v, v + delta)); 
+   		return v; 
+   }
+```
 
 ### CAS 的缺点？
 
@@ -97,10 +103,6 @@ public class AtomicInteger extends Number implements java.io.Serializable {
 ## 原子类 AtomicInteger 的 ABA 问题谈一谈？原子更新引用知道吗？
 
 - 原子引用
-
-  ```
-  
-  ```
 
 ```
 public class AtomicReferenceDemo {
