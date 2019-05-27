@@ -42,6 +42,8 @@ public class AtomicInteger extends Number implements java.io.Serializable {
     // setup to use Unsafe.compareAndSwapInt for updates
     private static final Unsafe unsafe = Unsafe.getUnsafe();
     private static final long valueOffset;
+    //AtomicInteger实例对象中value字段的偏移量是固定的，所以作为该偏移量作为静态变量
+    //unsafe.objectFieldOffset(Field f)用于获取对象中某个字段的偏移量
 
     static {
         try {
