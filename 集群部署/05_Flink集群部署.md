@@ -43,20 +43,20 @@
 jobmanager.rpc.address: hadoop201
 
 # The heap size for the JobManager JVM
-jobmanager.heap.size: 512m
+jobmanager.heap.size: 1024m
 
 # The heap size for the TaskManager JVM
-taskmanager.heap.size: 256m
+taskmanager.heap.size: 1024m
 
 #Specifies a list of directories into which Flink writes temporary files.
 taskmanager.tmp.dirs: /opt/module/flink-1.7.2/tmData
 
 # The number of task slots that each TaskManager offers. Each slot runs one parallel pipeline.
-taskmanager.numberOfTaskSlots: 8
+taskmanager.numberOfTaskSlots: 7
 
 # The amount of memory going to the network stack.
 taskmanager.network.memory.min: 64mb
-taskmanager.network.memory.max: 512mb
+taskmanager.network.memory.max: 1gb
 ```
 
 ##### 2.3.3 配置 masters, slaves，配置结果如下
@@ -78,4 +78,5 @@ hadoop201
 [hinoc@hadoop201 flink-1.7.2]$ ./bin/start-cluster.sh 
 ```
 
+- 在浏览器地址栏输入`192.168.2.101:8081`，可以看到Flink集群运行状态：
 ![1557289610735](assets/1557289610735.png)
