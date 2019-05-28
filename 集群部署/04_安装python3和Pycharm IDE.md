@@ -21,7 +21,7 @@
 
 #### 3.1 安装gcc编译环境
 
-- 没有gcc编译环境，执行./configure --prefix=/opt/module/python3时会报`no acceptable C compiler found in $PATH`
+- 如果没有gcc编译环境，执行./configure --prefix=/opt/module/python3时会报`no acceptable C compiler found in $PATH`
 
 ```
 sudo yum install -y gcc
@@ -152,6 +152,7 @@ pip 19.1.1 from /opt/module/python3/lib/python3.6/site-packages/pip (python 3.6)
 #### 6.4 添加项目文件
 
 ```
+改变PyCharm生成的PycharmProjects的拥有者
 [hinoc@hadoop201 opt]$ sudo chown -R hinoc:hadoop PycharmProjects/
 ```
 
