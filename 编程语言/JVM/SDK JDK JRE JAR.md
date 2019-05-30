@@ -28,15 +28,15 @@
 
 ## JAR
 
-​	JAVA的可执行程序 ，一个可行的Java应用程序，他存储在特别配置的JAR文件中，由
+​	一个可执行的jar 文件是一个自包含的 Java 应用程序，它存储在特别配置的JAR 文件中，可以由 JVM 直接执行它而无需事先提取文件或者设置类路径
 
 ## JDK深入
 
 ​	JDK是整个Java的核心，包括Java运行环境JRE、一堆Java工具（javac/java/jdb等）和java基础的类库（Java API、rt.jar等）
 
+![4622762-513a6830fb10ace5](assets/4622762-513a6830fb10ace5.png)
 
 
-![img](https:////upload-images.jianshu.io/upload_images/4622762-513a6830fb10ace5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/684)
 
 ​											JDK结构图
 
