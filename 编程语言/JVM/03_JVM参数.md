@@ -15,7 +15,7 @@
 
 - XX 参数
 
-  - Boolean 类型：-XX：+ 或者 - 某个属性值（+ 表示开启，- 表示关闭）
+  - Boolean 类型：-XX：+ / - 某个属性（+ 表示开启，- 表示关闭）
 
     - -XX:+PrintGCDetails：打印 GC 收集细节
     - -XX:-PrintGCDetails：不打印 GC 收集细节
@@ -109,32 +109,32 @@ cuzz@cuzz-pc:~/Project/demo$ java -XX:+PrintCommandLineFlags
 ## 你平时工作用过的 JVM 常用的基本配置参数有哪些？
 
 - -Xms
-
-  - 初始大小内存，默认为物理内存 1/64
+  - 初始内存大小（新生代+老年代），默认为物理内存 1/64
   - 等价于 -XX:InitialHeapSize
 
 - -Xmx
 
   - 最大分配内存，默认为物理内存的 1/4
   - 等价于 -XX:MaxHeapSize
+  - 一般而言，生产环境的jvm会把Xms和Xmx配置为相等。
 
 - -Xss
-
   - 设置单个线程栈的大小，一般默认为 512-1024k
   - 等价于 -XX:ThreadStackSize
 
 - -Xmn
-
   - 设置年轻代的大小
-  - **整个JVM内存大小=年轻代大小 + 年老代大小 + 持久代大小**，持久代一般固定大小为64m，所以增大年轻代后，将会减小年老代大小。此值对系统性能影响较大，Sun官方推荐配置为整个堆的3/8。
+  - **整个JVM内存大小=年轻代大小 + 老年代大小 + 持久代大小**，持久代一般固定大小为64m，所以增大年轻代后，将会减小年老代大小。此值对系统性能影响较大，Sun官方推荐配置为整个堆的3/8。
+  - 这个参数则是对 -XX:NewSize、-XX:MaxNewSize两个参数的同时配置，也就是说如果通过-Xmn来配置新生代的内存大小，那么-XX:NewSize = -XX:MaxNewSize=-Xmn
 
 - -XX:MetaspaceSize
-
-  - 设置元空间大小（元空间的本质和永久代类似，都是对 JVM 规范中的方法区的实现，不过元空间于永久代之间最大区别在于，**元空间并不在虚拟中，而是使用本地内存**，因此默认情况下，元空间的大小仅受本地内存限制）
-  - 元空间默认比较小，我们可以调大一点
+  - 设置元空间大小
+  - 在Java8中，永久代已经被移除，被一个称为元空间的区域所取代，元空间的本质和永久代类似，都是对 JVM 规范中的方法区的实现。
+  - 元空间与永久代之间最大区别在于，永久代使用的是JVM的堆内存，而**元空间并不在虚拟机中，而是使用本机物理内存**，因此默认情况下，元空间的大小仅受本地内存限制）
+  - 如果使用元空间，类的元数据放入native memory，字符串池和类的静态变量放入Java堆中，这样可以加载多少类的元数据就不再由MaxPermSize控制，而由系统的实际可用空间来控制
+  - 元空间默认比较小，大约21M，我们可以调大一点，防止出现错误：java.lang.OutOfMemoryError:Metaspace
 
 - -XX:+PrintGCDetails
-
   - 输出详细 GC 收集日志信息
 
     - 设置 JVM 参数为： -Xms10m -Xmx10m -XX:+PrintGCDetails
@@ -168,24 +168,21 @@ public class HelloGC {
       class space    used 336K, capacity 388K, committed 512K, reserved 1048576K
     Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
     	at com.cuzz.jvm.HelloGC.main(HelloGC.java:12)
-    ```
+```
 
-- GC
-![img](assets/a9a0eb99b30cf3fd8973f464eb4678bf50f760cc.jpg)
+- -XX:SurvivorRatio
+  - 设置新生代中 eden 和 S0（或S1） 的空间比例
+  - 默认 -XX:SurvivorRatio=8，Eden : S0 : S1 = 8 : 1 : 1
 
-- FullGC
-  ![img](assets/e04f3f3b68cff61027e5ba8eba9613bb7c69a08a.jpg)
+- -XX:NewRatio
+  - 设置置年轻代和老年代在堆结构的占比
+  - 默认 -XX:NewRatio=2， 老年代：年轻代 = 2：1，年轻代占整个堆的 1/3
 
--XX:SurvivorRatio
+- -XX:MaxTenuringThreshold
+  - 设置对象晋升老年代的年龄阈值
 
-- 设置新生代中 eden 和 S0/S1 空间比例
-- 默认 -XX:SurvivorRatio=8，Eden : S0 : S1 = 8 : 1 : 1
+- 典型设置案例
 
--XX:NewRatio
-
-- 配置年轻代和老年代在堆结构的占比
-- 默认 -XX:NewRatio=2 新生代占1，老年代占2，年轻代占整个堆的 1/3
-
--XX:MaxTenuringThreshold
-
-- 设置垃圾最大年龄
+```
+-Xms128m -Xmx4096m -Xss1024k -XX:MetaspaceSize=512m -XX:+PrintCommandLineFlags -XX:+PrintGCDetails -XX:+UseSerialGC
+```
