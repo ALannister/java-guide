@@ -61,7 +61,7 @@ public class HelloGC {
 
 可以看出默认是不打印 GC 收集细节
 
-也可是使用`jinfo -flags 1933` 查看所以的参数
+也可以使用`jinfo -flags 1933` 查看所有的参数
 
 - 两个经典参数：-Xms 和 - Xmx（如 -Xms1024m）
 	- -Xms 等价于 -XX:InitialHeapSize
