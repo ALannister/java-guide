@@ -1,67 +1,159 @@
-# Kafka副本同步机制理解
+# kafka副本同步机制
+
+### 1 副本相关概念
+
+#### AR
+
+AR ( Assigned Replicas) : 分区中所有的副本都称为 AR
+
+#### ISR
+
+ISR (In-Sync-Replicas) : ISR 是 AR 集合中的一个子集。 ISR 描述的是各个分区的与主 Leader 保持同步的 Follower.
+
+**注意**： 我们这里要知道什么是保持同步的Follower
+
+**在Kafka 较为低的版本（Kafka 0.9.*）有两个参数影响 ISR 的判断**：
+
+- ~~replica.lag.max.messages   默认为 4000 （废弃）~~
+
+  - 参数解释：如果 replica 节点落后 leader 节点此值大小的消息数量，leader节点就会将其从ISR中移除
+  
+  - 废弃原因：由于4000 是一个经验值，对于大的流量，反而会显得比较小。而对于小的流量，QPS 为 50 record/ s ，这个参数值又显得不够合理，故该值被废弃掉
+
+- replica.lag.time.max.ms  默认为 10000 单位 ms
+
+  - 参数解释： 在此窗口时间内没有收到 follower的 fetch请求，leader 会将其从 ISR(in-sync replicas)中移除。
+
+**副本不同步的异常情况：**
+
+- 慢副本：在一定周期时间内follower不能追赶上leader。最常见的原因之一是I / O瓶颈导致follower追加复制消息速度慢于从leader拉取速度。
+
+- 卡住副本：在一定周期时间内follower停止从leader拉取消息。follower replica卡住了是由于GC暂停或follower失效或死亡。
+
+- 新启动副本：当用户给主题增加副本因子时，新的follower不在同步副本列表中，直到他们完全赶上了leader日志。
+
+#### OSR
+
+OSR 指的是 （Out-of-sync Replicas）, 与Leader 滞后过多的副本会被放到OSR列表中。如何判断滞后，请参考之前的ISR，还有，当用户给主题增加副本因子时，新的follower刚启动时也在OSR
+
+我们知道了 AR, ISR , OSR 的概念，那么3者之间有什么关系呢？ 
+
+AR = ISR + OSR
+
+#### HW
+
+HW 是 High Watermark 的缩写，俗称高水位，水印，它标识了一个特定的消息偏移量（Offset ）,消费者只能拉取到这个 Offset 之前的消息。这样就保证了如果leader所在的broker失效，该消息仍然可以从新选举的leader中获取。对于来自内部broKer的读取请求，没有HW的限制。
+
+**注意** ： HW 标识的是已经确认的消息的下一条消息。
+
+#### LEO
+
+LEO 是 Log End Offset 的缩写， 它标识了当前日志文件中 下一条待写入消息的 Offset .
+
+**注意** ：LEO 标识的是下一条待写入消息的 Offset
+
+ ![img](assets/20190329162744201.png)
+
+### 2 副本在集群中的分布
+
+Kafka每个topic的partition有N个副本，其中N是topic的复制因子。Kafka通过多副本机制实现故障自动转移，当Kafka集群中一个Broker失效情况下仍然保证服务可用。在Kafka中发生复制时确保partition的预写式日志有序地写到其他节点上。N个replicas中，其中一个replica为leader，其他都为follower，leader处理partition的所有读写请求，与此同时，follower会被动定期地去复制leader上的数据。
+
+如下图所示，Kafka集群中有4个broker, 某topic有3个partition,且复制因子即副本个数也为3：
+
+ ![img](assets/20160620014329074.png)
+
+Kafka提供了数据复制算法保证，如果leader发生故障或挂掉，Kafka确保从同步副本列表中选举一个副本为leader，新leader负责客户端的消息读取和写入。leader负责维护和跟踪同步副本列表中所有follower滞后的状态。当producer发送一条消息到broker后，leader写入消息并复制到所有follower。消息复制延迟受最慢的follower限制，重要的是快速检测慢副本，如果follower“落后”太多或者失效，leader将会把它从ISR中删除。
+
+Kafka的复制机制既不是完全的同步复制，也不是单纯的异步复制。事实上，同步复制要求所有能工作的follower都复制完，这条消息才会被commit，这种复制方式极大的影响了吞吐率。而异步复制方式下，follower异步的从leader复制数据，数据只要被leader写入log就被认为已经commit，这种情况下如果follower都还没有复制完，落后于leader时，突然leader宕机，则会丢失数据。而Kafka的这种使用ISR的方式则很好的均衡了确保数据不丢失以及吞吐率。
+
+Kafka的ISR的管理最终都会反馈到Zookeeper节点上。具体位置为：/brokers/topics/[topic]/partitions/[partition]/state。目前有两个地方会对这个Zookeeper的节点进行维护：
+
+- Controller来维护：Kafka集群中的其中一个Broker会被选举为Controller，主要负责Partition管理和副本状态管理，也会执行类似于重分配partition之类的管理任务。在符合某些特定条件下，Controller下的LeaderSelector会选举新的leader，ISR和新的leader_epoch及controller_epoch写入Zookeeper的相关节点中。同时发起LeaderAndIsrRequest通知所有的replicas。
+
+- leader来维护：leader有单独的线程定期检测ISR中follower是否脱离ISR, 如果发现ISR变化，则会将新的ISR的信息反馈到Zookeeper的相关节点中。
+
+### 3  LEO和HW 什么时候会被更新
+
+Kafka有两套follower副本LEO：
+
+- 一套LEO保存在follower副本所在broker的副本管理机中；
+
+- 另一套LEO保存在leader副本所在broker的副本管理机中——换句话说，leader副本机器上保存了所有的follower副本的LEO。
+
+#### LEO的更新
+
+1. leader副本LEO何时更新？
+
+  leader写log时就会自动地更新它自己的LEO值。
+
+2. follower端的follower副本LEO何时更新？
+
+ follower端的follower副本LEO值就是其底层日志的LEO值，也就是说每当新写入一条消息，其LEO值就会被更新(类似于LEO += 1)。当follower发送FETCH请求后，leader将数据返回给follower，此时follower开始向底层log写数据，从而自动地更新LEO值
+
+3. leader端的follower副本LEO何时更新？
+
+  leader副本端的follower副本LEO的更新发生在leader在处理follower FETCH请求时。一旦leader接收到follower发送的FETCH请求，它首先会从自己的log中读取相应的数据，但是在给follower返回数据之前，它先去更新follower副本的LEO(即上面所说的第二套LEO)
+
+#### HW 的更新
+
+1. leader副本何时更新HW值？
+
+前面说过了，leader的HW值就是分区HW值，因此何时更新这个值是我们最关心的，因为它直接影响了分区数据对于consumer的可见性 。以下4种情况下leader会尝试去更新分区HW——切记是尝试，有可能因为不满足条件而不做任何更新：
+
+- 副本成为leader副本时：当某个副本成为了分区的leader副本，Kafka会尝试去更新分区HW。这是显而易见的道理，毕竟分区leader发生了变更，这个副本的状态是一定要检查的！不过，本文讨论的是当系统稳定后且正常工作时备份机制可能出现的问题，故这个条件不在我们的讨论之列。
+
+- broker出现崩溃导致副本被踢出ISR时：若有broker崩溃则必须查看下是否会波及此分区，因此检查下分区HW值是否需要更新是有必要的。本文不对这种情况做深入讨论
+
+- producer向leader副本写入消息时：因为写入消息会更新leader的LEO，故有必要再查看下HW值是否也需要修改
+
+- leader处理follower FETCH请求时：当leader处理follower的FETCH请求时首先会从底层的log读取数据，之后会尝试更新分区HW值
+
+特别注意上面4个条件中的最后两个。它揭示了一个事实——当Kafka broker都正常工作时，分区HW值的更新时机有两个：leader处理PRODUCE请求时和leader处理FETCH请求时。另外，leader是如何更新它的HW值的呢？前面说过了，leader broker上保存了一套follower副本的LEO以及它自己的LEO。当尝试确定分区HW时，它会选出所有满足条件的副本，比较它们的LEO(当然也包括leader自己的LEO)，并选择最小的LEO值作为HW值。这里的满足条件主要是指副本要满足以下两个条件之一：
+
+   - 处于ISR中
+   - 副本LEO落后于leader LEO的时长不大于replica.lag.time.max.ms参数值(默认是10s)
+
+2. follower副本何时更新HW？
+
+follower更新HW发生在其更新LEO之后，一旦follower向log写完数据，它会尝试更新它自己的HW值。具体算法就是比较当前LEO值与FETCH响应中leader的HW值，取两者的小者作为新的HW值。这告诉我们一个事实：如果follower的LEO值超过了leader的HW值，那么follower HW值是不会越过leader HW值的。
+
+### 4  对于0.11 之前版本，只有 HW , LEO 概念的 Kafka 的主从节点更新 LEO, HW 的流程
+
+**Step1：**  生产者向Leader副本中写入消息。某一时刻，leader 副本的 LEO 增长至 5， 副本的 HW 还为0.
+
+![201929165822421](assets/201929165822421.png)
+
+**Step2：**  之后 follower 副本向 Leader 副本拉取消息，在拉取的请求中会带有 自身的LEO信息，这个 LEO 信息对应的是 FetchRequest 请求中的 fetch_offset.
+
+![img](assets/20190329165822421.png)
+
+**step3：** Leader 副本返回给 follower 副本相应的信息，并且还带有自身的HW信息， 这个HW 信息对应的是 FetchResponse 中的 high_watermark
+
+ ![img](assets/20190329170729145.png)
+
+此时两个 follower 副本各自拉取到了消息，并且更新各自的LEO 为3和4. 与此同时，follower 副本还会更新自己的 HW,  更新 HW 的算法是比较当前 LEO 和 Leader 传过来的 HW 的值，取最小值作为自己的HW 值。
+
+当前两个follower 副本的HW 都等于0 （min(LEO,0)=0 ） 
+
+**Step4：** 接下来 follower 副本再次请求拉去 leader 副本中的消息。
+
+​	此时Leader 副本收到来自 follower 副本的 FetchRequest 请求，其中带有 LEO 的相关信息，选取其中的最小值作为新的 HW , 即 min(15, 3, 4) =3 。然后连同消息 和 HW  一起返回 FetchResponse 给 Follower 副本。注意 Leader 副本 的HW 是一个很重要的东西，因为它直接影响了分区数据对消费者的可见性。
+
+![img](assets/20190329172324781.png)
+
+**Step5：** 两个Follower 副本在收到新的消息之后。更新LEO , 并且更新HW 为3 ， min(LEO, 3) = 3
+
+ ![img](assets/20190329172653969.png)
+
+注意： 这就是正常情况下的 LEO 与 HW 更新流程
+
+除此之外，Leader 副本所在的节点会记录所有副本的LEO, follower 副本所在的节点只会记录自身的 LEO, 而不会记录其他副本的LEO。 对HW 而言，各个副本所在的节点 都只记录它自身的HW.
 
 
 
-### 前言
-
-Apache Kafka的流行归功于它设计和操作简单、存储系统高效、充分利用磁盘顺序读写等特性、非常适合在线日志收集等高吞吐场景。
-
-Apache Kafka特性之一是它的复制协议。对于单个集群中每个Broker不同工作负载情况下，如何自动调优Kafka副本的工作方式是比较有挑战的。它的挑战之一是要知道如何避免follower进入和退出同步副本列表(即ISR)。从用户的角度来看，如果生产者发送一大批海量消息，可能会引起Kafka Broker很多警告。这些警报表明一些topics处于“under replicated”状态，即，这些副本处于同步失败或失效状态，更意味着数据没有被复制到足够数量Broker从而增加数据丢失的概率。因此Kafka集群中处于“under replicated”中Partition数要密切监控。这个警告应该来自于Broker失效,减慢或暂停等状态，而不是生产者写不同大小消息引起的。在这篇文章中,我将讨论这种问题的根源以及我们如何修复它。
-
-关键信息——根据使用经验和运行环境配置相关参数，不要靠猜测。
-
-### Kafka副本
-
-Kafka中主题的每个Partition有一个预写式日志文件，每个Partition都由一系列有序的、不可变的消息组成，这些消息被连续的追加到Partition中，Partition中的每个消息都有一个连续的序列号叫做offset, 确定它在分区日志中唯一的位置。 
-
-![20160620014300167](assets/20160620014300167.png)
-
-Kafka每个topic的partition有N个副本，其中N是topic的复制因子。Kafka通过多副本机制实现故障自动转移，当Kafka集群中一个Broker失效情况下仍然保证服务可用。在Kafka中发生复制时确保partition的预写式日志有序地写到其他节点上。N个replicas中。其中一个replica为leader，其他都为follower，leader处理partition的所有读写请求，与此同时，follower会被动定期地去复制leader上的数据。 
-
-![20160620014329074](assets/20160620014329074.png)
-
-Kafka必须提供数据复制算法保证，如果leader发生故障或挂掉，Kafka确保从ISR（同步副本列表）中选举一个同步最快的副本为leader，新leader将接受客户端的读写请求。通常情况下，leader接受producer消息并写入，follower定期从leader拉取数据，直到ISR中的副本都写入成功，最新的消息提交成功。leader负责维护和跟踪ISR中所有follower滞后状态。消息复制延迟受最慢的follower限制,重要的是快速检测慢副本,如果follower”落后”太多或者失效,leader将会把它从replicas从ISR移除。
-
-### partition的follower追上leader含义
-
-Kafka中每个partition的follower没有“赶上”leader的日志可能会从同步副本列表中移除。下面用一个例子解释一下“追赶”到底是什么意思。请看一个例子：主题名称为foo  1 partition 3 replicas。假如partition的replication分布在Brokers 1、2和3上，并且Broker 3消息已经成功提交。同步副本列表中1为leader、2和3为follower。假设replica.lag.max.messages设置为4，表明只要follower落后leader不超过3，就不会从同步副本列表中移除。replica.lag.time.max设置为500 ms，表明只要follower向leader发送fetch请求时间间隔不超过500 ms，就不会被标记为死亡,也不会从同步副本列中移除。
-
- ![20160620014619456](assets/20160620014619456.png)
-
-下面看看，生产者发送下一条消息写入leader，与此同时follower Broker 3 GC暂停，如下图所示: 
-
-![20160620014641722](assets/20160620014641722-1559790293427.png)
-
-直到follower Broker 3从同步副本列表中移除或追赶上log end offset，最新的消息才会认为提交。注意,因为follower Broker 3小于replica.lag.max.messages= 4落后于leader Broker 1，Kafka不会从同步副本列表中移除。在这种情况下,这意味着follower Broker 3需要迎头追赶上知道offset = 6,如果是,那么它完全“赶上” leader Broker 1 log end offset。让我们假设代理3出来的GC暂停在100 ms和追赶上领袖的日志结束偏移量。在这种状态下，下面partition日志会看起来像这样 
-
-![20160620014718389](assets/20160620014718389.png)
-
-是什么原因导致分区的副本与leader不同步
-一个副本可以不同步Leader有如下几个原因
-慢副本：在一定周期时间内follower不能追赶上leader。最常见的原因之一是I / O瓶颈导致follower追加复制消息速度慢于从leader拉取速度。
-卡住副本：在一定周期时间内follower停止从leader拉取请求。follower replica卡住了是由于GC暂停或follower失效或死亡。
-新启动副本：当用户给主题增加副本因子时，新的follower不在同步副本列表中，直到他们完全赶上了leader日志。
-一个partition的follower落后于leader足够多时，被认为不在同步副本列表或处于滞后状态。在Kafka-0.8.2.x中,副本滞后判断依据是副本落后于leader最大消息数量(replica.lag.max.messages)或replicas响应partition leader的最长等待时间(replica.lag.time.max.ms)。前者是用来检测缓慢的副本,而后者是用来检测失效或死亡的副本
-
-如何确定副本是滞后的
-这个模型检测不同步卡住副本列表工作下所有情况都适用。它追踪follower replica时间内没有向leader发送拉取请求,表明它已经死了。另一方面,如果均匀流量模式情况下，为一个主题或多个主题设置这些参数检测模型不同步慢副本列表消息的数量会工作很好,但我们发现生产环境中它不扩展到所有主题各种工作负载。
-
-接着上面的例子,如果主题foo获取数据速率2 msg/sec，leader单次批量接收一般不会超过3条消息,然后你知道主题参数replica.lag.max.messages设置为4。为什么?因为follower replica从leader复制消息前，已经有大批量消息写leader，follower replica落后于leader不超过3条消息 。另一方面，如果主题foo的follower replica初始落后于leader持续超过3消息,leader会从同步副本列表中移除慢副本，避免消息写延迟增加。
-
-这本质上是replica.lag.max.messages的目标。能够检测follower与leader不一致且从同步副本列表移除。然而,主题在流量高峰期发送了一批消息(4条消息),等于replica.lag.max.messages = 4配置值。在那一瞬间,2个follower replica将被认为是”out-of-sync”并且leader会从同步副本列表中移除。 
-
-![20160620014916999](assets/20160620014916999.png)
-
-2个follower replica都是活着,下次拉取请求他们会赶上leader log end offset并重新加入同步副本列表。重复相同的过程，如果生产者继续发送相对一批较大消息到leader。这种情况演示了当follower replica频繁在从同步副本列表移除和重新加入同步副本列表之间来回切换时，不必要触发虚假警报。 
-
-
-
-参数replica.lag.![20160620014944061](assets/20160620014944061.png)max.messages指向核心问题。它的配置值根据队列流量大小和集群一般负载情况做出判断并设置一个合适值!
-
-副本配置规则
-笔者认为真正重要的事情是检测卡或慢副本,这段时间follower replica是“out-of-sync”落后于leader。在服务端现在只有一个参数需要配置replica.lag.time.max.ms。这个参数解释replicas响应partition leader的最长等待时间。检测卡住或失败副本的探测——如果一个replica失败导致发送拉取请求时间间隔超过replica.lag.time.max.ms。Kafka会认为此replica已经死亡会从同步副本列表从移除。检测慢副本机制发生了变化——如果一个replica开始落后leader超过replica.lag.time.max.ms。Kafka会认为太缓慢并且会从同步副本列表中移除。除非replica请求leader时间间隔大于replica.lag.time.max.ms，因此即使leader使流量激增和大批量写消息。Kafka也不会从同步副本列表从移除该副本。
---------------------- 
-作者：幽灵之使 
+------------------
+作者：高达一号 
 来源：CSDN 
-原文：https://blog.csdn.net/lizhitao/article/details/51718185 
+原文：https://blog.csdn.net/u010003835/article/details/88683871 
 版权声明：本文为博主原创文章，转载请附上博文链接！
+
