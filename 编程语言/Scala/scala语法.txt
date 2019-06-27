@@ -1,0 +1,51 @@
+def sum(n:Int)={
+	var res = 0
+	for(i <- 1 to n){
+		res += i
+	}
+	res
+}
+
+def fab(n:Int):Int={
+	if(n<=2) 1
+	else fab(n-1)+fab(n-2)
+}
+
+def sayHello(name:String="william", age:Int):Unit={
+	printf("Hi,%s,you are %d",name,age)
+}
+
+//sayHello方法的完整写法
+class HelloWorld{
+	private var name = "leo"
+	def sayHello():Unit={printf("hello %s",name)}
+	def getName = name
+}
+
+//没有参数，括号可以省去
+class HelloWorld{
+	private var name = "leo"
+	def sayHello:Unit={printf("hello %s",name)}
+	def getName = name
+}
+
+//没有返回值，返回值类型可以省去
+class HelloWorld{
+	private var name = "leo"
+	def sayHello()={printf("hello %s",name)}
+	def getName = name
+}
+
+//返回值和参数都没有，都可以省去
+class HelloWorld{
+	private var name = "leo"
+	def sayHello={printf("hello %s",name)}
+	def getName = name
+}
+
+//方法就一条语句，大括号可以省去
+class HelloWorld{
+	private var name = "leo"
+	def sayHello=printf("hello %s",name)
+	def getName = name
+}
