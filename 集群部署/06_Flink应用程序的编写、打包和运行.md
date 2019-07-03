@@ -216,6 +216,7 @@ public class EocCltMacRate {
                     macrate_resp.put("data", Arrays.asList(macrate_up / count, macrate_down / count));
                     System.out.println(macrate_resp.toJSONString());
                     collector.collect(macrate_resp.toJSONString());
+                    System.out.println(macrate_resp.toJSONString());
                     macrate_up = 0;
                     macrate_down = 0;
                     count = 0;
