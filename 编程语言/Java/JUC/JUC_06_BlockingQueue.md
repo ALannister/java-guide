@@ -36,7 +36,7 @@
   - remove() ：获取并移除此队列的头元素，若队列为空，则抛出NoSuchElementException()异常
   - poll()：获取并移除此队列的头元素，若队列为空，则返回 null
   - take()：获取并移除此队列头元素，若没有元素则一直阻塞
-  - poll(timeout, timeunit)：获取并移除此队列头元素，若队列为空，则等待指定时间，移除成功返回true，移除失败返回false
+  - poll(timeout, timeunit)：获取并移除此队列头元素，若队列为空，则等待指定时间，移除成功返回此队列头元素，移除失败返回null
 
 - 检查方法：
 

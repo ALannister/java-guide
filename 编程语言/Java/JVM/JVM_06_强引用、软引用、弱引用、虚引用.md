@@ -56,7 +56,7 @@ Heap
  Metaspace       used 6325K, capacity 6478K, committed 6656K, reserved 1056768K
   class space    used 723K, capacity 754K, committed 768K, reserved 1048576K
 ```
-	即使oom也不会回收具有强引用的存活对象
+​		即使oom也不会回收具有强引用的存活对象
 
 ### 软引用
 
@@ -120,7 +120,7 @@ Heap
 
 ```
 
-	当内存不够的时候软引用指向的对象就会被回收。
+​		当内存不够的时候软引用指向的对象就会被回收。
 
 ### 弱引用
 

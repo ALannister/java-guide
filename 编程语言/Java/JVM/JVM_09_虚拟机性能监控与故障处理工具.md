@@ -5,7 +5,6 @@
 - 作用：JVM Process Status Tool，显示指定系统内所有的HotSpot虚拟机进程
 
 - 效果
-- 
 ```
 [lxf@hadoop101 ~]$ jps -l
 1377 Test
@@ -102,11 +101,11 @@
 
 - 发现线程间死锁
 
-参考：GIT\Docs\编程语言\Java\JUC_08_死锁编码以及定位分析.md
+参考：JUC_08_死锁编码以及定位分析.md
 
 - 死循环导致CPU占用过高
 
-参考：Docs\操作系统\linuxCPU占用过高的定位分析思路.md
+参考：linuxCPU占用过高的定位分析思路.md
 
 ### jmap
 

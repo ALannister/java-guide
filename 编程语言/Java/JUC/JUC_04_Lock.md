@@ -200,7 +200,7 @@ public class SynchronziedDemo {
     }
  ```
 
-​	上面例子可以说明 ReentrantLock 是可重入锁，而且在 #doAdd 方法中加两次锁和解两次锁也可以。
+​	上面例子可以说明 ReentrantLock 是可重入锁，而且在 doAdd 方法中加两次锁和解两次锁也可以。
 
 #### 2.5 synchronized 和 ReentrantLock 有什么区别？
 

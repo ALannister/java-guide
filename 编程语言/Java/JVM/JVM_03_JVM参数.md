@@ -94,7 +94,8 @@ bool UseParallelGC                            := true                           
 bool UseParallelOldGC                          = true                                {product}
 bool UsePerfData                               = true                                {product}
 bool UsePopCountInstruction                    = true                                {product}
-bool UseRDPCForConstantTableBase               = false                               {C2 product}
+bool UseRDPCForConstantTableBase               = false                               
+{C2 product}
 ```
 
 = 与 := 的区别是，一个是默认，一个是人为改变或者 jvm 加载时改变的参数

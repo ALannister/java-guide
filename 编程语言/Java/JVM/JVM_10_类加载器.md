@@ -36,7 +36,7 @@
 
 - 命令行启动应用时候由`JVM`初始化加载含有`main`的主类。
 
-- 通过`Class.forName("Hello")`方法动态加载类，默认会执行初始化块，这是因为`Class.forName("Hello")`其实就是`Class.forName("Hello"，true,CALLCLASS.getClassLoader())`，第二个参数就是类加载过程中的连接操作。如果指定了`ClassLoader`，则不会执行初始化块。
+- 通过`Class.forName("Hello")`方法动态加载类，默认会执行初始化块，这是因为`Class.forName("Hello")`其实就是`Class.forName("Hello"，true,CALLCLASS.getClassLoader())`，第二个参数就是类加载过程中的连接操作。
 
 - 通过`ClassLoader.loadClass("Hello")`方法动态加载类，不会执行初始化块，因为`loadClass`方法有两个参数，用户只是用第一个参数，第二个参数默认为`false`，即不对该类进行解析则就不会初始化。
 
