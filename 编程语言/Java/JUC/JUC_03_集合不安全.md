@@ -26,9 +26,9 @@ public class UnsafeListDemo {
 - 解决方案
 
 ```
-	List<Integer> list = new Vector<Integer>();//synchronized方法
 	List<Integer> list = Collections.synchronizedList(new ArrayList<>());//synchronized方法
 	List<Integer> list = new CopyOnWriteArrayList<Integer>();//读写分离，写时复制,lock
+	List<Integer> list = new Vector<Integer>();//synchronized方法
 ```
 
 - 优化建议
