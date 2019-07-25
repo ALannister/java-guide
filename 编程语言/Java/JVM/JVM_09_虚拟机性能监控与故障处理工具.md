@@ -105,7 +105,7 @@
 
 - 死循环导致CPU占用过高
 
-参考：linuxCPU占用过高的定位分析思路.md
+参考：linux CPU占用过高的定位分析思路.md
 
 ### jmap
 
