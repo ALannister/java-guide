@@ -184,7 +184,7 @@ LEFT JOIN (SELECT d.`id`,e.`name` ,d.`deptName` FROM t_dept d
 LEFT JOIN t_emp e 
 ON d.`CEO`=e.`id`) f
 ON a.deptId = f.id
-2.使用join(推荐)使用join2.使用join(推荐)
+2.使用join(推荐)使用join
 步骤:a. 关联出每个人物对应的门派
        b.通过门派的 ceo 关联对应的掌门
 SELECT e.`name`, d.`deptName`,f.`name` ceo FROM t_dept d

@@ -93,7 +93,7 @@ public class ThreadDemo03 {
 
 #### 架构说明
 
-![947447203](assets/947447203.jpg)
+![947447203](assets/线程池类图.png)
 
 #### 编码实现
 
