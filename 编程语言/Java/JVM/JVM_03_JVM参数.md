@@ -122,7 +122,8 @@ cuzz@cuzz-pc:~/Project/demo$ java -XX:+PrintCommandLineFlags
 - -Xss
   - 设置单个线程栈的大小，一般默认为 512-1024k
   - 等价于 -XX:ThreadStackSize
-
+- -Xss参数的设置是需要非常小心的，太大，则可能会无法创建足够的线程，出现`Error occurred during initialization of VM java.lang.OutOfMemoryError: unable to create new native thread`，太小，则可能无法进行足够深层次的递归，出现`Exception in thread "main" java.lang.StackOverflowError`。
+  
 - -Xmn
   - 设置年轻代的大小
   - **整个JVM内存大小=年轻代大小 + 老年代大小 + 持久代大小**，持久代一般固定大小为64m，所以增大年轻代后，将会减小年老代大小。此值对系统性能影响较大，Sun官方推荐配置为整个堆的3/8。
