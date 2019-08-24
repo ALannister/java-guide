@@ -1,5 +1,7 @@
 # MySQL Linux版的安装（MySQL 5.5）
 
+[TOC]
+
 ### 1 下载地址
 
 官网下载地址：http://dev.mysql.com/downloads/mysql/
@@ -40,7 +42,7 @@ rpm -ivh MySQL-client-5.5.54-1.linux2.6.x86_64.rpm
 
 ### 5 查看MySQL安装版本
 
-或者可以执行 mysqladmin --version命令，类似java -version如果打出消息，即为成功。
+可以执行 mysqladmin --version命令，类似java -version如果打出消息，即为成功。
 
 ![img](assets/2F6DAA30-2CBD-4BC4-A74F-81AC7C90D7B2.png) 
 
@@ -66,7 +68,9 @@ rpm -ivh MySQL-client-5.5.54-1.linux2.6.x86_64.rpm
 
 启动服务后，执行命令 
 
+```
 /usr/bin/mysqladmin -u root  password '123123'
+```
 
 ![img](assets/7A1FE57E-0F96-414B-A3F3-7F3ECD7382C9.png) 
 
@@ -95,15 +99,23 @@ rpm -ivh MySQL-client-5.5.54-1.linux2.6.x86_64.rpm
 
 ### 9  自启动mysql服务
 
-![img](assets/4920BECB-48AC-4700-8867-8612FC9C8C41.png) 
+![1566574349407](assets/1566574349407.png)
 
-![img](assets/6E5C0214-39D3-4D36-8E07-5A3EA8525E8A.png) 
+运行ntsysv命令，弹出自启动服务列表，看到[*]mysql这一行，表示开机后会自启动mysql
+
+```
+[root@atguigu opt]# ntsysv
+```
+
+![img](assets/6E5C0214-39D3-4D36-8E07-5A3EA8525E8A-1566574661747.png) 
+
+
 
 ### 10 修改字符集问题
 
 尝试插入输入：
 
-![img](assets/370E7F6F-9CEE-4092-AB06-39765F3C281D.png) 
+[缺图]
 
 原因是字符集问题
 
@@ -116,15 +128,13 @@ show variables like '%char%';
 ```
 看看出现的结果：
 
-![img](assets/40EABA20-F383-4F1D-82E9-204411D125B8.png) 
+[缺图] 
 
 默认的是客户端和服务器都用了latin1，所以会乱码。
 
 2 修改my.cnf
 
-在/usr/share/mysql/ 中找到my.cnf的配置文件，
-
-拷贝其中的my-huge.cnf 到 /etc/  并命名为my.cnf 
+在/usr/share/mysql/ 中找到my.cnf的配置文件，拷贝其中的my-huge.cnf 到 /etc/  并命名为my.cnf 
 
 mysql 优先选中 /etc/ 下的配置文件
 
@@ -152,16 +162,19 @@ default-character-set=utf8
 
  3、重新启动mysql
 
-但是原库的设定不会发生变化，参数修改之对新建的数据库生效
+但是原库的设定不会发生变化，参数修改只对新建的数据库生效
 
 4、已生成的库表字符集如何变更
 
 修改数据库的字符集
 
-`mysql> alter database mytest character set 'utf8';`
-
+```
+mysql> alter database mytest character set 'utf8';
+```
 修改数据表的字符集
 
-`mysql> alter table user convert to  character set 'utf8';`
+```
+mysql> alter table user convert to  character set 'utf8';
+```
 
 但是原有的数据如果是用非'utf8'编码的话，数据本身不会发生改变。
