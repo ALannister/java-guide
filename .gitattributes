@@ -1,3 +1,5 @@
 *.xmind filter=lfs diff=lfs merge=lfs -text
 
-*.md linguist-language=Java
+*.js linguist-language=java
+*.css linguist-language=java
+*.html linguist-language=java
