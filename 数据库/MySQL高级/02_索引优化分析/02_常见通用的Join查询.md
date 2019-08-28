@@ -60,7 +60,7 @@ CREATE TABLE `t_emp` (
 
  KEY `fk_dept_id` (`deptId`)
 
- \#CONSTRAINT `fk_dept_id` FOREIGN KEY (`deptId`) REFERENCES `t_dept` (`id`)
+ CONSTRAINT `fk_dept_id` FOREIGN KEY (`deptId`) REFERENCES `t_dept` (`id`)
 
 ) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -118,13 +118,13 @@ select * from t_emp a left join t_dept b on a.deptId = b.id where b.id is null;
 
 5 B的独有
 
- select * from t_emp a right join t_dept b on a.deptId = b.id where a.deptId is null;  
+select * from t_emp a right join t_dept b on a.deptId = b.id where a.deptId is null;  
 
 6 AB全有
 
-\#MySQL Full Join的实现 因为MySQL不支持FULL JOIN,下面是替代方法
+MySQL Full Join的实现 因为MySQL不支持FULL JOIN,下面是替代方法:
 
- \#left join + union(可去除重复数据)+ right join
+left join + union(可去除重复数据)+ right join
 
 SELECT * FROM t_emp A LEFT JOIN t_dept B ON A.deptId = B.id
 
@@ -136,7 +136,7 @@ SELECT * FROM t_emp A RIGHT JOIN t_dept B ON A.deptId = B.id
 
 7 A的独有+B的独有
 
-​        \* FROM t_emp A LEFT JOIN t_dept B ON A.deptId = B.id WHERE B.`id` IS NULL
+SELECT * FROM t_emp A LEFT JOIN t_dept B ON A.deptId = B.id WHERE B.`id` IS NULL
 
 UNION
 
@@ -158,45 +158,40 @@ select  avg(a.age) from t_emp a inner join t_dept b on a.id=b.CEO  ;
 ```
 - join 的理解例题
 ```
-两者区别两者区别：
-思想上的区别：
-子查询理解子查询理解：①先知道需要查询并将数据拿出来(若from 后的表也是一个子查询结果)。②在去寻找满足判断条件的数据(where,on,having 后的参数等)。而这些查询条件通常是通过子查询获得的。
-子查询是一种根据结果找条件的倒推的顺序。比较好理解与判断
-例题中：“人物”在t_emp 表中，所以第一个from 是t_emp 表。(也可以直接将子查询方法 from 后面(因为本题中的子查询中也有select 的数据),所以任然需要上述的推导过程)
-join理解join理解：执行完第一步后的结果为一张新表。在将新表与 t_emp 进行下一步的 left join 关联。
-先推出如何获得条件，再像算数题一样一步一步往下 join。可以交换顺序，但只能是因为条件间不相互关联时才能交换顺序。
-join 比 子查询难一点 
-join 能用到索引，但是子查询出来的表会使索引失效。
-***求所有人物对应的掌门:
+求所有人物对应的掌门:
+
 t_dept 表
 id  deptName  address       CEO 
  1       华山派          华山          2
 ...
+
 t_emp 表
 id  name     age  deptId 
 1  风清扬     90         1
 ...
-1.使用子查询(不推荐，影响后续用索引)使用子查询1.使用子查询(不推荐，影响后续用索引)
+
+1.使用子查询(不推荐，影响后续用索引)
 步骤：a.创建子查询  查询出每个门派对应的ceo  
-         b. 根据t_emp 对应的 deptId 关联子查询表查询出所有人物对应的 ceo
+     b.根据t_emp 对应的 deptId 关联子查询表查询出所有人物对应的 ceo
 SELECT a.name,f.deptName,f.name FROM t_emp a
 LEFT JOIN (SELECT d.`id`,e.`name` ,d.`deptName` FROM t_dept d
 LEFT JOIN t_emp e 
 ON d.`CEO`=e.`id`) f
 ON a.deptId = f.id
 2.使用join(推荐)使用join
-步骤:a. 关联出每个人物对应的门派
-       b.通过门派的 ceo 关联对应的掌门
+步骤：a.关联出每个人物对应的门派
+     b.通过门派的 ceo 关联对应的掌门
 SELECT e.`name`, d.`deptName`,f.`name` ceo FROM t_dept d
 RIGHT JOIN t_emp e
 ON d.`id` = e.`deptId`   ##第一步 --->得到关联了部门的一张新的联合表
 LEFT JOIN t_emp f   
 ON d.`CEO`=f.`id`       ##第二步  --->通过新的联合表中的数据与另一张表关联
+
 SELECT d.`deptName`, e.`name` CEO,d.`id`,f.name
  FROM t_dept d
-LEFT JOIN  t_emp e    //上述两个 join 交换了顺序并不影响执行。前提是两个 join 间不是依赖关系。且都跟
-ON d.`CEO`=e.`id` 
-LEFT JOIN t_emp f
+LEFT JOIN  t_emp e    //上述两个 join 交换了顺序并不影响执行。前提是两个 join 间不是依赖关系。
+ON d.`CEO`= e.`id` 
+RIGHT JOIN t_emp f
 ON f.deptId = d.`id`
 
 ```
