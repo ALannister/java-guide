@@ -1,0 +1,35 @@
+java.util.Arrays
+java.util.Comparator
+
+static <T> List<T>	asList(T... a)
+
+static int	binarySearch(char[] a, char key)
+static int	binarySearch(char[] a, int fromIndex, int toIndex, char key)
+static int	binarySearch(Object[] a, int fromIndex, int toIndex, Object key)
+static int	binarySearch(Object[] a, Object key)
+static <T> int	binarySearch(T[] a, int fromIndex, int toIndex, T key, Comparator<? super T> c)
+static <T> int	binarySearch(T[] a, T key, Comparator<? super T> c)
+
+static char[]	copyOf(char[] original, int newLength)
+static <T> T[]	copyOf(T[] original, int newLength)
+static char[]	copyOfRange(char[] original, int from, int to)
+static <T> T[]	copyOfRange(T[] original, int from, int to)
+
+static boolean	equals(char[] a, char[] a2)
+static boolean	equals(Object[] a, Object[] a2)
+
+static void	fill(char[] a, char val)
+static void	fill(char[] a, int fromIndex, int toIndex, char val)
+static void	fill(Object[] a, int fromIndex, int toIndex, Object val)
+static void	fill(Object[] a, Object val)
+
+static int	hashCode(char[] a)
+static int	hashCode(Object[] a)
+
+static void	sort(char[] a)
+static void	sort(char[] a, int fromIndex, int toIndex)
+static <T> void	sort(T[] a, Comparator<? super T> c)
+static <T> void	sort(T[] a, int fromIndex, int toIndex, Comparator<? super T> c)
+
+static String	toString(char[] a)
+static String	toString(Object[] a)
