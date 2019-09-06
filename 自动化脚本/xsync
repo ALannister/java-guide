@@ -1,0 +1,22 @@
+#!/bin/bash
+#1 
+pcount=$#
+if((pcount==0)); then
+echo no args;
+exit;
+fi
+#2 
+p1=$1
+fname=`basename $p1`
+echo fname=$fname
+#3 
+pdir=`cd -P $(dirname $p1); pwd`
+echo pdir=$pdir
+#4 
+user=`whoami`
+#5 
+hosts=("hadoop102" "hadoop103")
+for host in ${hosts[@]}; do
+echo -------------------- $host --------------------
+rsync -rvl $pdir/$fname $user@$host:$pdir
+done
