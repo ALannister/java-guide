@@ -66,7 +66,7 @@
 | 用户表默认使用 | N                                                        | Y                                                            |
 | 自带系统表使用 | Y                                                        | N                                                            |
 
- innodb 索引 使用 B+TREE, myisam 索引使用 b-tree
+ innodb 索引 使用 B+TREE, myisam 索引使用 B+TREE
 innodb 主键为聚簇索引，基于聚簇索引的增删改查效率非常高。
 
 ### 4 阿里巴巴、淘宝用哪个

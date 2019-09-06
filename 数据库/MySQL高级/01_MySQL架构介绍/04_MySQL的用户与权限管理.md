@@ -22,7 +22,7 @@ select host,user,password,select_priv,insert_priv,drop_priv from mysql.user;
 
 - host ：   表示连接类型
   - `%` 表示所有远程通过 TCP方式的连接
-  - `IP 地址` 如 (192.168.1.2,127.0.0.1) 通过制定ip地址进行的TCP方式的连接
+  - `IP 地址` 如 (192.168.1.2,127.0.0.1) 通过指定ip地址进行的TCP方式的连接
   - `机器名`   通过制定网络中的机器名进行的TCP方式的连接
   - `::1`   IPv6的本地ip地址  等同于IPv4的 127.0.0.1
   - `localhost` 本地方式通过命令行方式的连接 ，比如mysql -u xxx -p 123xxx 方式的连接。
@@ -45,7 +45,7 @@ select host,user,password,select_priv,insert_priv,drop_priv from mysql.user;
 
   修改当前用户的密码:
 ```
-  set password =password('123456')
+set password=password('123456');
 ```
 
   修改某个用户的密码:
@@ -85,9 +85,10 @@ grant 权限1,权限2,…权限n on 数据库名称.表名称 to 用户名@用�
 比如 :
 
 ```
-grant select,insert,delete,drop on atguigudb.* to li4@localhost  ;
+grant select,insert,delete,drop on atguigudb.* to li4@localhost;
 
 给li4用户用本地命令行方式下，授予atguigudb这个库下的所有表的插删改查的权限。
+
 
 grant all privileges on *.* to joe@'%'  identified by '123'; 
 
@@ -96,8 +97,8 @@ grant all privileges on *.* to joe@'%'  identified by '123';
 就算 all privileges 了所有权限，grant_priv 权限也只有 root 才能拥有。
 
 ```
-给 root 赋连接口令 grant all privileges on *.* to root@'%'  ;后新建的连接没有密码，需要设置密码才能远程连接。
-update user set password=password('root') where user='root' and host='%';
+给 root 赋连接口令 grant all privileges on *.* to root@'%';后新建的连接没有密码，需要设置密码才能远程连接。
+update mysql.user set password=password('123456') where user='root' and host='%';
 ```
 #### 2.2 收回权限
 
@@ -107,7 +108,8 @@ update user set password=password('root') where user='root' and host='%';
 ```
   REVOKE ALL PRIVILEGES ON mysql.* FROM joe@localhost;
 
-  #若赋的全库的表就 收回全库全表的所有权限
+  #收回mysql库全表的所有权限
+  
 
   REVOKE select,insert,update,delete ON mysql.* FROM joe@localhost;
 
@@ -125,15 +127,15 @@ update user set password=password('root') where user='root' and host='%';
 
 - 查看某用户的全局权限
 
-  `select  * from user ;`
+  `select  * from mysql.user ;`
 
 - 查看某用户的某库的权限
 
-  ` select * from  db;`
+  ` select * from  mysql.db;`
 
 - 查看某用户的某个表的权限
 
-  ` select * from tables_priv;`
+  ` select * from mysql.tables_priv;`
 
 ### 3 通过工具远程访问
 

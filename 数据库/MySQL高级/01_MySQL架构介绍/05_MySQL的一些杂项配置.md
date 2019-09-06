@@ -27,7 +27,7 @@
 
   ![img](assets/2D7109F6-A943-4A2E-9A38-3BE019D79F30.png) 
 
-- 使用 set sql_mode=ONLY_FULL_GROUP_BY; 的方式设置会将之前的设置覆盖掉
+- 使用` set sql_mode=ONLY_FULL_GROUP_BY;` 的方式设置会将之前的设置覆盖掉
 
 - 同时设置多个限制：
 
@@ -44,8 +44,7 @@
     
   - STRICT_TRANS_TABLES：
   
-  
-    在该模式下，如果一个值不能插入到一个事务表中，则中断当前的操作，对非事务表不做限制
+      在该模式下，如果一个值不能插入到一个事务表中，则中断当前的操作，对非事务表不做限制
   
   - NO_ZERO_IN_DATE：
   

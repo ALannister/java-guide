@@ -11,15 +11,18 @@
 ![img](assets/DE818E1E-618B-429E-BDEB-D8DE7DCB9740.png) 
 
 ### 2 拷贝&解压缩
-
+```
+tar -xvf MySQL-5.5.54-1.linux2.6.x86_64.rpm-bundle.tar -C /opt/module/mysql
+```
 ### 3 检查工作 
 
 - 检查当前系统是否安装过MySQL
 
   执行安装命令前，先执行查询命令
 
+  ```
   rpm -qa|grep mysql
-
+  ```
   如果存在mysql-libs的旧版本包如下：
 
   ![img](assets/63DDC3F0-BF10-4255-BC83-72789CB67B38.png) 
@@ -45,8 +48,6 @@ rpm -ivh MySQL-client-5.5.54-1.linux2.6.x86_64.rpm
 可以执行 mysqladmin --version命令，类似java -version如果打出消息，即为成功。
 
 ![img](assets/2F6DAA30-2CBD-4BC4-A74F-81AC7C90D7B2.png) 
-
- 通过vim 查看 mysql组 和mysql组
 
 ### 6 mysql服务的启+停
 
@@ -74,9 +75,11 @@ rpm -ivh MySQL-client-5.5.54-1.linux2.6.x86_64.rpm
 
 ![img](assets/7A1FE57E-0F96-414B-A3F3-7F3ECD7382C9.png) 
 
-然后通过 mysql -uroot -p123123进行登录
+然后通过 `mysql -uroot -p123123`进行登录
 
 ![img](assets/47041558-AEAE-4B92-AFF0-ADF074150347.png) 
+
+在命令行终端输入`quit`即可退出
 
 ### 8 MySQL的安装位置
 
@@ -113,28 +116,23 @@ rpm -ivh MySQL-client-5.5.54-1.linux2.6.x86_64.rpm
 
 ### 10 修改字符集问题
 
-尝试插入输入：
-
-[缺图]
+尝试插入含有中文的行会出现乱码
 
 原因是字符集问题
 
 1 查看字符集
 ```
-
 show variables like 'character%'; 
-
-show variables like '%char%';
 ```
 看看出现的结果：
 
-[缺图] 
+![1567654492922](assets/1567654492922.png)
 
 默认的是客户端和服务器都用了latin1，所以会乱码。
 
 2 修改my.cnf
 
-在/usr/share/mysql/ 中找到my.cnf的配置文件，拷贝其中的my-huge.cnf 到 /etc/  并命名为my.cnf 
+在/usr/share/mysql/ 中找到my-huge.cnf配置文件，拷贝my-huge.cnf 到 /etc/  并命名为my.cnf 
 
 mysql 优先选中 /etc/ 下的配置文件
 
@@ -147,9 +145,7 @@ default-character-set=utf8
 [mysqld]
 
 character_set_server=utf8
-
 character_set_client=utf8
-
 collation-server=utf8_general_ci
 
 [mysql]
@@ -161,6 +157,10 @@ default-character-set=utf8
 ![img](assets/5CCB9E57-60DF-41F6-AA55-E8BDB1411846.png) 
 
  3、重新启动mysql
+
+```
+service mysql restart
+```
 
 但是原库的设定不会发生变化，参数修改只对新建的数据库生效
 
