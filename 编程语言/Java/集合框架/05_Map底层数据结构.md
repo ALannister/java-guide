@@ -35,13 +35,24 @@ static int hash(int h) {
 
 相比于 JDK1.8 的 hash 方法 ，JDK 1.7 的 hash 方法的性能会稍差一点点，因为毕竟扰动了 4 次。
 
+```
+java中的三种位运算符
+<<      :     左移运算符，num << 1,相当于num乘以2
+
+>>      :     右移运算符，num >> 1,相当于num除以2
+
+>>>     :     无符号右移，忽略符号位，空位都以0补齐
+```
+
 所谓 **“拉链法”** 就是：将链表和数组相结合。也就是说创建一个链表数组，数组中每一格就是一个链表。若遇到哈希冲突，则将冲突的值加到链表中即可。
 
 ![1](assets/1.jpg)
 
 ### JDK1.8之后
 
-相比于之前的版本， JDK1.8之后在解决哈希冲突时有了较大的变化，当链表长度大于阈值（默认为8）时，将链表转化为红黑树，以减少搜索时间。
+相比于之前的版本， JDK1.8之后在解决哈希冲突时有了较大的变化，当链表长度**大于**阈值（默认为8）时，将链表转化为红黑树，以减少搜索时间。
+
+注：当链表已经有8个节点了，此时再新链上第9个节点，在成功添加了这个新节点之后，立马将链表转红黑树
 
 ![2](assets/2.jpg)
 
@@ -64,15 +75,15 @@ ConcurrentHashMap 和 Hashtable 的区别主要体现在实现线程安全的方
 
 **HashTable:**
 
-[![HashTable全表锁](assets/6.png)]
+![HashTable全表锁](assets/6.png)
 
 **JDK1.7的ConcurrentHashMap：**
 
-[![JDK1.7的ConcurrentHashMap](assets/68.jpg)]
+![JDK1.7的ConcurrentHashMap](assets/68.jpg)
 
 **JDK1.8的ConcurrentHashMap（TreeBin: 红黑二叉树节点 Node: 链表节点）：**
 
-[![JDK1.8的ConcurrentHashMap](assets/687.jpg)]
+![JDK1.8的ConcurrentHashMap](assets/687.jpg)
 
 ## ConcurrentHashMap线程安全的具体实现方式/底层具体实现
 
@@ -95,6 +106,6 @@ static class Segment<K,V> extends ReentrantLock implements Serializable {
 
 ConcurrentHashMap取消了Segment分段锁，采用CAS和synchronized来保证并发安全。当添加一个元素时，先通过hash判断该元素在数组中的位置，如果该位置为null，通过CAS添加该元素，否则，使用synchronized锁住头节点，然后再添加。数据结构跟HashMap1.8的结构类似，数组+链表/红黑二叉树。Java 8在链表长度超过一定阈值（8）时将链表（寻址时间复杂度为O(N)）转换为红黑树（寻址时间复杂度为O(log(N))）
 
-synchronized只锁定当前链表或红黑二叉树的首节点，这样只要hash不冲突，就不会产生并发，效率又提升N倍。
+synchronized只锁定当前链表或红黑树的首节点，这样只要hash不冲突，就不会产生并发，效率又提升N倍。
 
 [转载]:https://github.com/Snailclimb/JavaGuide/blob/master/docs/java/collection/Java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%A2%98.md#concurrenthashmap-%E5%92%8C-hashtable-%E7%9A%84%E5%8C%BA%E5%88%AB

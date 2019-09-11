@@ -7,7 +7,7 @@
 	在运行状态时(动态的)：对于任意一个类，都能够得到这个类的所有属性和方法。
 
 　　　　　　　　　　　　   对于任意一个对象，都能够得到它的任意属性和方法。
-　　　　　　　　　　　　      
+　　　
 ```
 
  ### Class类是反射机制的起源，我们得到Class类对象有3种方法：
@@ -61,7 +61,7 @@ public class ClassTest1 {
  * 打印结果：
  * 什么都没打印
  * 总结：JVM将使用类Person的类装载器,将类Person装入内存(前提是:类Person还没有装入内存),
- *      不对类Person做类的初始化工作,返回类A的Class的对象
+ *      不对类Person做类的初始化工作,返回类Person的Class对象
  */
  
 ```
@@ -87,7 +87,7 @@ public class ClassTest2 {
  * 打印结果：
  * Person的静态初始化块
  * 总结：JVM将使用类Person的类装载器,将类Person装入内存(前提是:类Person还没有装入内存),
- *      并对类Person做类的初始化工作,返回类Person的Class的对象
+ *      并对类Person做类的初始化工作,返回类Person的Class对象
  */
 
 ```
@@ -111,8 +111,8 @@ public class ClassTest3 {
  * Person的静态初始化块
  * Person的普通初始化块
  * Person的构造器
- * 总结：返回引用p运行时真正所指的对象(因为:子类对象的引用可能会赋给父类对象的引用变量)所属的类的Class的对象；
- *      getClass()方法是Object类的方法，所有的类都继承了Object，因此所有类的对象也都具有getClass()方法。
+ * 总结：返回引用p运行时真正所指的对象(因为:子类对象的引用可能会赋给父类对象的引用变量)所属的类的Class对象；
+ * getClass()方法是Object类的方法，所有的类都继承了Object，因此所有类的对象也都具有getClass()方法。
  */
 ```
 

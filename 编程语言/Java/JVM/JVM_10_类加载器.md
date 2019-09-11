@@ -47,7 +47,7 @@
 ```
 ### 类加载实例
 
-当在命令行下执行：`java HelloWorld(HelloWorld是含有main方法的类的Class文件)`，JVM会将`HelloWorld.class`加载到内存中，并在堆中形成一个Class的对象`HelloWorld.class`。
+当在命令行下执行：`java HelloWorld`(HelloWorld是含有main方法的类的Class文件)，JVM会将`HelloWorld.class`加载到内存中，并在堆中形成一个Class的对象`HelloWorld.class`。
 
 基本的加载流程如下：
 

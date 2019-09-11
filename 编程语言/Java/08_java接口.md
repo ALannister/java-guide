@@ -43,7 +43,7 @@
 `[public/peoected] abstract returnType method1();`
 
 **接口的抽象方法：**
-`[public/peoected] [abstract] returnType method1();`
+`[public] [abstract] returnType method1();`
 
 ------
 

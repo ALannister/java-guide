@@ -63,9 +63,9 @@ public class HelloGC {
 
 也可以使用`jinfo -flags 1933` 查看所有的参数
 
-- 两个经典参数：-Xms 和 - Xmx（如 -Xms1024m）
-	- -Xms 等价于 -XX:InitialHeapSize
-	- -Xmx 等价于 -XX:MaxHeapSize
+两个经典参数：-Xms 和 - Xmx（如 -Xms1024m）
+- -Xms 等价于 -XX:InitialHeapSize
+- -Xmx 等价于 -XX:MaxHeapSize
 
 ### 盘点家底查看 JVM 默认值
 
@@ -74,28 +74,31 @@ public class HelloGC {
 ```
 cuzz@cuzz-pc:~/Project/demo$ java -XX:+PrintFlagsInitial
 [Global flags]
-     intx ActiveProcessorCount                      = -1                                  {product}
-    uintx AdaptiveSizeDecrementScaleFactor          = 4                                   {product}
-    uintx AdaptiveSizeMajorGCDecayTimeScale         = 10                                  {product}
-    uintx AdaptiveSizePausePolicy                   = 0                                   {product}
-    uintx AdaptiveSizePolicyCollectionCostMargin    = 50                                  {product}
-    uintx AdaptiveSizePolicyInitializingSteps       = 20                                  {product}
-    uintx AdaptiveSizePolicyOutputInterval          = 0                                   {product}
-    uintx AdaptiveSizePolicyWeight                  = 10                                  {product}
+     intx ActiveProcessorCount                    = -1                 {product}
+    uintx AdaptiveSizeDecrementScaleFactor        = 4                  {product}
+    uintx AdaptiveSizeMajorGCDecayTimeScale       = 10                 {product}
+    uintx AdaptiveSizePausePolicy                 = 0                  {product}
+    uintx AdaptiveSizePolicyCollectionCostMargin  = 50                 {product}
+    uintx AdaptiveSizePolicyInitializingSteps     = 20                 {product}
+    uintx AdaptiveSizePolicyOutputInterval        = 0                  {product}
+    uintx AdaptiveSizePolicyWeight                = 10                 {product}
+    ...
 ```
 
 
 - 查看修改更新：-XX:+PrintFlagsFinal
 
 ```
-bool UsePSAdaptiveSurvivorSizePolicy           = true                                {product}
-bool UseParNewGC                               = false                               {product}
-bool UseParallelGC                            := true                                {product}
-bool UseParallelOldGC                          = true                                {product}
-bool UsePerfData                               = true                                {product}
-bool UsePopCountInstruction                    = true                                {product}
-bool UseRDPCForConstantTableBase               = false                               
-{C2 product}
+cuzz@cuzz-pc:~/Project/demo$ java -XX:+PrintCommandLineFlags -version
+...
+bool UsePSAdaptiveSurvivorSizePolicy     = true            {product}
+bool UseParNewGC                         = false           {product}
+bool UseParallelGC                      := true            {product}
+bool UseParallelOldGC                    = true            {product}
+bool UsePerfData                         = true            {product}
+bool UsePopCountInstruction              = true            {product}
+bool UseRDPCForConstantTableBase         = false           {C2 product}
+...
 ```
 
 = 与 := 的区别是，一个是默认，一个是人为改变或者 jvm 加载时改变的参数
@@ -103,8 +106,11 @@ bool UseRDPCForConstantTableBase               = false
 - 打印命令行参数(可以看默认垃圾回收器)：-XX:+PrintCommandLineFlags
 
 ```
-cuzz@cuzz-pc:~/Project/demo$ java -XX:+PrintCommandLineFlags
--XX:InitialHeapSize=128789376 -XX:MaxHeapSize=2060630016 -XX:+PrintCommandLineFlags -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseParallelGC
+cuzz@cuzz-pc:~/Project/demo$ java -XX:+PrintCommandLineFlags -version
+-XX:InitialHeapSize=30504896 -XX:MaxHeapSize=488078336 -XX:+PrintCommandLineFlags -XX:+UseCompressedClassPointers -XX:+UseCompressedOops 
+java version "1.8.0_201"
+Java(TM) SE Runtime Environment (build 1.8.0_201-b09)
+Java HotSpot(TM) 64-Bit Server VM (build 25.201-b09, mixed mode)
 ```
 
 ## 你平时工作用过的 JVM 常用的基本配置参数有哪些？
