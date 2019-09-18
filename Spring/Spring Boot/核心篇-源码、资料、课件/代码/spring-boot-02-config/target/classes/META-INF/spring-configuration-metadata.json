@@ -1,0 +1,48 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "com.atguigu.springboot.bean.Person",
+      "name": "person",
+      "type": "com.atguigu.springboot.bean.Person"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "com.atguigu.springboot.bean.Person",
+      "name": "person.age",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "com.atguigu.springboot.bean.Person",
+      "name": "person.birth",
+      "type": "java.util.Date"
+    },
+    {
+      "sourceType": "com.atguigu.springboot.bean.Person",
+      "name": "person.boss",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "sourceType": "com.atguigu.springboot.bean.Person",
+      "name": "person.dog",
+      "type": "com.atguigu.springboot.bean.Dog"
+    },
+    {
+      "sourceType": "com.atguigu.springboot.bean.Person",
+      "name": "person.last-name",
+      "description": "<bean class=\"Person\">\n      <property name=\"lastName\" value=\"字面量\/${key}从环境变量、配置文件中获取值\/#{SpEL}\"><\/property>\n <bean\/>",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.atguigu.springboot.bean.Person",
+      "name": "person.lists",
+      "type": "java.util.List<java.lang.Object>"
+    },
+    {
+      "sourceType": "com.atguigu.springboot.bean.Person",
+      "name": "person.maps",
+      "type": "java.util.Map<java.lang.String,java.lang.Object>"
+    }
+  ]
+}
