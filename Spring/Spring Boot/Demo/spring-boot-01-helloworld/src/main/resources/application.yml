@@ -1,0 +1,41 @@
+person:
+  name: 林南为
+  age: 22
+  birthDay: 2019/07/07
+  friends:
+    - 小凯凯
+    - 小玲玲
+    - 大佬
+  scores:
+    数学: 100
+    语文: 99
+    英语: 98
+
+dog:
+  name: 二哈
+  age: 2
+  birthDay: 2020/09/09
+  families:
+    dad: 大哈
+    son: 小哈
+    wife: 哈哈
+  friends:
+    - 蕉太狼
+    - 河蟹
+
+
+server:
+  port: 8083
+spring:
+  profiles:
+    active: prod
+---
+server:
+  port: 8084
+spring:
+  profiles: dev
+---
+server:
+  port: 8085
+spring:
+  profiles: prod

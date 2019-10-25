@@ -1,0 +1,67 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "com.lannister.bean.Cat",
+      "name": "cat",
+      "type": "com.lannister.bean.Cat"
+    },
+    {
+      "sourceType": "com.lannister.bean.Person",
+      "name": "person3",
+      "type": "com.lannister.bean.Person"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "com.lannister.bean.Cat",
+      "name": "cat.age",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "com.lannister.bean.Cat",
+      "name": "cat.birth-day",
+      "type": "java.util.Date"
+    },
+    {
+      "sourceType": "com.lannister.bean.Cat",
+      "name": "cat.families",
+      "type": "java.util.Map<java.lang.String,java.lang.Object>"
+    },
+    {
+      "sourceType": "com.lannister.bean.Cat",
+      "name": "cat.friends",
+      "type": "java.util.List<java.lang.String>"
+    },
+    {
+      "sourceType": "com.lannister.bean.Cat",
+      "name": "cat.name",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.lannister.bean.Person",
+      "name": "person3.age",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "com.lannister.bean.Person",
+      "name": "person3.birth-day",
+      "type": "java.util.Date"
+    },
+    {
+      "sourceType": "com.lannister.bean.Person",
+      "name": "person3.friends",
+      "type": "java.util.List<java.lang.String>"
+    },
+    {
+      "sourceType": "com.lannister.bean.Person",
+      "name": "person3.name",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.lannister.bean.Person",
+      "name": "person3.scores",
+      "type": "java.util.Map<java.lang.String,java.lang.Object>"
+    }
+  ]
+}

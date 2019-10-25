@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       					   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--
+        init-method ： 用于配置初始化方法，准备数据
+        destory-method : 用于配置销毁方法，清理资源
+     -->
+    <bean id="userService" class="com.lannister.spring.service.impl.UserServiceImpl"
+          init-method="myInit" destroy-method="myDestroy"></bean>
+
+    <bean class="com.lannister.spring.lifecircle.MyBeanPostProcessor"></bean>
+</beans>

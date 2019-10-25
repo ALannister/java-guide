@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       					   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 将静态工厂创建的实例交予spring
+		class 确定静态工厂全限定类名
+		factory-method 确定静态方法名
+	-->
+    <bean id="userService" class="com.lannister.spring.factory.StaticFactory" factory-method="createService"></bean>
+
+
+</beans>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       					   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- scope="prototype" 每执行一次getBean将获得一个实例 -->
+    <bean id="userService" class="com.lannister.spring.service.impl.UserServiceImpl" scope="prototype"></bean>
+
+</beans>
