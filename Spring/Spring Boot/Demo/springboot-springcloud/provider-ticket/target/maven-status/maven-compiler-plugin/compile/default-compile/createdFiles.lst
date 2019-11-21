@@ -1,0 +1,3 @@
+com\lannister\providerticket\controller\TicketController.class
+com\lannister\providerticket\ProviderTicketApplication.class
+com\lannister\providerticket\service\TicketService.class

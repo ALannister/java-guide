@@ -29,6 +29,7 @@ public class DeptService {
   private Logger logger = LoggerFactory.getLogger(getClass());
 
   /**
+   * 注解的方式使用缓存
    * 缓存的数据能存入redis
    * 第二次从缓存中查询就不能反序列化回来
    * 存的是dept的json数据；CacheManager默认使用RedisTemplate<Object,Employee>操作redis
@@ -43,14 +44,21 @@ public class DeptService {
 //    return dept;
 //  }
 
-  // 编码的方式使用缓存
-  //使用缓存管理器得到缓存，进行API调用
+  /**
+   * 编码的方式使用缓存
+   * 使用缓存管理器得到缓存，进行API调用
+   * @param id
+   * @return
+   */
   public Department getDeptById(Integer id){
-    logger.info("查询部门" + id);
-    Department department = departmentMapper.getDeptById(id);
     //获取某个缓存
-    Cache dept = deptCacheManager.getCache("dept");
-    dept.put("dept:"+id,department);
-    return department;
+    Cache deptCache = deptCacheManager.getCache("dept");
+    Department dept = deptCache.get("dept:" + id, Department.class);
+    if(dept == null){
+      logger.info("查询部门" + id);
+      dept = departmentMapper.getDeptById(id);
+      deptCache.put("dept:"+id,dept);
+    }
+    return dept;
   }
 }
